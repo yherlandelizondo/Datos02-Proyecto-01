@@ -1,12 +1,11 @@
 #include <iostream>
 #include <stdio.h>
-#include "general.cpp"
+#include "Initializer.cpp"
 
 using namespace std;
 
 int main(){
 
-    general();
-
+    Initializer* start = new Initializer;
     return 0;
 }

@@ -24,11 +24,16 @@ float bulletX = spaceshipX;
 float bulletY = spaceshipY;
 float timeSinceLastShoot = 0;
 bool bulletOnScreen = false;
-float shootInterval = 2.0;
+float shootInterval = 0.1;
 int bulletSpeed = 10;
 
 ALLEGRO_TIMER *timer = NULL;
 ALLEGRO_BITMAP *spaceShipImage = NULL;
+ALLEGRO_BITMAP *blueimage = NULL;
+ALLEGRO_BITMAP *purpleimage = NULL;
+ALLEGRO_BITMAP *greenimage = NULL;
+ALLEGRO_BITMAP *whiteimage = NULL;
+ALLEGRO_BITMAP *redimage = NULL;
 ALLEGRO_BITMAP *bulletImage = NULL;
 ALLEGRO_EVENT_QUEUE *queue = NULL;
 ALLEGRO_DISPLAY* disp = NULL;
@@ -57,11 +62,17 @@ void updateBullet(){
 //! Funtion to render the game
 void render(){
     al_clear_to_color(al_map_rgb(0, 0, 0));
-    al_draw_textf(font, al_map_rgb(255, 255, 255), 0, 0, 0, "Y: %.1f BulletOnScreen: %.1d", spaceshipY, bulletOnScreen);
+    al_draw_textf(font, al_map_rgb(255, 255, 255), 0, 0, 0, "BulletSpeed: %.1d BulletOnScreen: %.1d", bulletSpeed, bulletOnScreen);
     al_draw_bitmap(spaceShipImage, spaceshipX, spaceshipY, 0);
     if(bulletOnScreen){
         al_draw_bitmap(bulletImage, bulletX, bulletY, 0);
     }
+
+    al_draw_bitmap(blueimage, 400, 0, 1);
+    al_draw_bitmap(redimage, 400, 50, 1);
+    al_draw_bitmap(greenimage, 400, 100, 1);
+    al_draw_bitmap(purpleimage, 400, 150, 1);
+    al_draw_bitmap(whiteimage, 400, 200, 1);
     al_flip_display();
 }
 
@@ -76,8 +87,13 @@ int main()
     queue = al_create_event_queue();
     disp = al_create_display(screenWidth, screenHeight);
     font= al_create_builtin_font();
-    spaceShipImage = al_load_bitmap("space.png");
-    bulletImage = al_load_bitmap("bullet.png");
+    spaceShipImage = al_load_bitmap("sprite_spaceship.png");
+    bulletImage = al_load_bitmap("sprite_bullet.png");
+    redimage = al_load_bitmap("sprite_redEnemy.png");
+    purpleimage = al_load_bitmap("sprite_purpleEnemy.png");
+    greenimage = al_load_bitmap("sprite_greenEnemy.png");
+    whiteimage = al_load_bitmap("sprite_whiteEnemy.png");
+    blueimage = al_load_bitmap("sprite_blueEnemy.png");
     al_register_event_source(queue, al_get_keyboard_event_source());
     al_register_event_source(queue, al_get_display_event_source(disp));
     al_register_event_source(queue, al_get_timer_event_source(timer));
@@ -110,21 +126,34 @@ int main()
                     shootBullet();
                     timeSinceLastShoot = 0;
                 }
-                if(key[ALLEGRO_KEY_W])
+                if(key[ALLEGRO_KEY_W]){
                     if(spaceshipY == 0){
                         spaceshipY = 0;
                     }else{
                         spaceshipY -= movementDistance;
                     }
-                if(key[ALLEGRO_KEY_S])
+                }  
+                if(key[ALLEGRO_KEY_S]){
                     if(spaceshipY == 435){
                         spaceshipY = 435;
                     }else{
                         spaceshipY += movementDistance;
                     }
-                if(key[ALLEGRO_KEY_ESCAPE])
+                }   
+                if(key[ALLEGRO_KEY_O]){
+                    if(bulletSpeed < 50){
+                        bulletSpeed += 1;
+                    }
+                }
+                if(key[ALLEGRO_KEY_P]){
+                    if(bulletSpeed > 5){
+                        bulletSpeed -= 1;
+                    }
+                } 
+                if(key[ALLEGRO_KEY_ESCAPE]){
                     done = true;
-
+                }
+                    
                 for(int i = 0; i < ALLEGRO_KEY_MAX; i++)
                     key[i] &= KEY_SEEN;
                 

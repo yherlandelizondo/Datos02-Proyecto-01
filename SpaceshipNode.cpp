@@ -74,7 +74,19 @@ class SpaceshipNode{
             }
         }
 
-        
+        string getColor(){
+            if(selectedColor == 0){
+                return "sprite_blueEnemy.png";
+            }else if(selectedColor == 1){
+                return "sprite_greenEnemy.png";
+            }else if(selectedColor == 2){
+                return "sprite_redEnemy.png";
+            }else if(selectedColor == 3){
+                return "sprite_purpleEnemy.png";
+            }else if(selectedColor == 4){
+                return "sprite_whiteEnemy.png";
+            }
+        }
         
 
 };

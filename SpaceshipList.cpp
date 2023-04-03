@@ -6,6 +6,7 @@ using namespace std;
 class SpaceshipList{
 
     SpaceshipNode* head;
+    
     public:
         SpaceshipList(){
             head = NULL;

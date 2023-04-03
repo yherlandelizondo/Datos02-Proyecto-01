@@ -1,16 +1,33 @@
 #include <iostream>
 #include <stdio.h>
-
+#include <time.h>
+#include <stdlib.h>
 using namespace std;
+
 //! falta el id
 
 class SpaceshipNode{
     private:
         int id;
         int health;
+        int random;
+        int randomCol;
         SpaceshipNode* next;
-
     public:
+        int randomColor(){
+            srand(time(NULL));
+            randomCol = rand()%4;
+            cout << random;
+            return random;
+        }
+        bool randomBool(){
+            srand(time(NULL));
+            random = rand()%2;
+            if(random){
+                return true;
+            }
+            return false;    
+        }
         SpaceshipNode(){
             health = 100;
             id = 0;

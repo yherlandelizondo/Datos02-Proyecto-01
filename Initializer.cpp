@@ -10,7 +10,7 @@ class Initializer{
         int spaceshipsPerWave = 0;
         int spaceshipsSpeed = 0;
         int phases = 0;
-        //int spaceshipHealth;
+        // int spaceshipHealth;
         int bulletDamage = 0;
 
         //TODO: tambien se puede tomar la vida de las naves aqui

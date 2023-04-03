@@ -12,6 +12,8 @@ class SpaceshipNode{
         int health;
         int random;
         int randomCol;
+        int xCoord;
+        int yCoord;
         SpaceshipNode* next;
         bool yMovement;
         int selectedColor;
@@ -32,6 +34,7 @@ class SpaceshipNode{
             return false;    
         }
 
+
     public:
         
         SpaceshipNode(){
@@ -40,6 +43,9 @@ class SpaceshipNode{
             next = NULL;
             yMovement = randomBool();
             selectedColor = randomColor();
+            xCoord = 550;
+            srand(time(NULL));
+            yCoord = rand()%430;
         }
 
         SpaceshipNode(int identifier){
@@ -86,6 +92,12 @@ class SpaceshipNode{
             }else if(selectedColor == 4){
                 return "sprite_whiteEnemy.png";
             }
+        }
+        int getXCoord(){
+            return xCoord;
+        }
+        int getYCoord(){
+            return yCoord;
         }
         
 

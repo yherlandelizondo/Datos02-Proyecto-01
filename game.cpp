@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <iostream>
+#include <time.h>
 #include "Initializer.cpp"
 #include <allegro5/allegro5.h>
 #include <allegro5/allegro_image.h>
@@ -74,12 +75,12 @@ void render(){
     if(bulletOnScreen){
         al_draw_bitmap(bulletImage, bulletX, bulletY, 0);
     }
-
-    al_draw_bitmap(blueimage, 400, 0, 1);
-    al_draw_bitmap(redimage, 400, 50, 1);
-    al_draw_bitmap(greenimage, 400, 100, 1);
-    al_draw_bitmap(purpleimage, 400, 150, 1);
-    al_draw_bitmap(whiteimage, 400, 200, 1);
+    srand(time(NULL));
+    al_draw_bitmap(blueimage, 550, rand()%430, 1);
+    al_draw_bitmap(redimage, 550, rand()%430, 1);
+    al_draw_bitmap(greenimage, 550, rand()%430, 1);
+    al_draw_bitmap(purpleimage, 550, rand()%430, 1);
+    al_draw_bitmap(whiteimage, 550, rand()%430, 1);
     al_flip_display();
 }
 
@@ -106,7 +107,7 @@ int main()
         timer = al_create_timer(1.0 / 60.0);
         queue = al_create_event_queue();
         disp = al_create_display(screenWidth, screenHeight);
-        font= al_create_builtin_font();
+        font = al_create_builtin_font();
         spaceShipImage = al_load_bitmap("sprite_spaceship.png");
         bulletImage = al_load_bitmap("sprite_bullet.png");
         redimage = al_load_bitmap("sprite_redEnemy.png");

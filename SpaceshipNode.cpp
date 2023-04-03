@@ -34,12 +34,15 @@ class SpaceshipNode{
             }
             return false;    
         }
-
-
+        void setHealth(){
+            for(int i = 0; i <= phase; i++){
+                health += 50;
+            }
+        }
     public:
         
         SpaceshipNode(){
-            health = 100;
+            health = 0;
             id = 0;
             next = NULL;
             phase = 0;
@@ -54,6 +57,7 @@ class SpaceshipNode{
             this -> id = identifier;
             this -> phase = phaseNum;
             this -> next = NULL;
+            setHealth();
         }
 
         void setID(int identifier){
@@ -63,7 +67,6 @@ class SpaceshipNode{
         int getID(){
             return id;
         }
-
         void setNext(SpaceshipNode* ptr){
             next=ptr;
         }

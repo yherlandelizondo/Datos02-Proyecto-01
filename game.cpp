@@ -3,6 +3,7 @@
 #include <iostream>
 #include <time.h>
 #include "Initializer.cpp"
+#include "SpaceshipList.cpp"
 #include <allegro5/allegro5.h>
 #include <allegro5/allegro_image.h>
 #include <allegro5/allegro_font.h>
@@ -27,12 +28,14 @@ float timeSinceLastShoot = 0;
 bool bulletOnScreen = false;
 float shootInterval = 0.1;
 int bulletSpeed = 10;
-int bullets = 0;
-int level = 0;
-int spaceshipsSpeed = 0;
-int spaceshipsPerWave = 0;
-int phases = 0;
-int enemies = 0;
+int bullets;
+int level;
+int spaceshipsSpeed;
+int spaceshipsPerWave;
+int phases;
+int enemies;
+int ID = 0;
+int specificPhase = 0;
 
 ALLEGRO_TIMER *timer = NULL;
 ALLEGRO_BITMAP *spaceShipImage = NULL;
@@ -117,12 +120,21 @@ int main()
         blueimage = al_load_bitmap("sprite_blueEnemy.png");
         phases = start -> getPhases();
         bullets = start -> getBullets();
-        enemies = phases * 5 * spaceshipsPerWave;
         spaceshipsSpeed = start -> getSpaceshipsSpeed();
         spaceshipsPerWave = start -> getSpaceshipsPerWave();
+        enemies = phases * 5 * spaceshipsPerWave;
 
         //! initialization of the spaceship list, and adding all the spaceships to the list
-        
+        SpaceshipList* spaceList = new SpaceshipList;
+
+        while(enemies >= (spaceshipsPerWave * 5)){
+            specificPhase++;
+            for(int i = 0; i != (spaceshipsPerWave * 5); i++){
+                spaceList->insert(ID, specificPhase);
+                ID++;
+            }
+            enemies -= (spaceshipsPerWave * 5);
+        };
 
         al_register_event_source(queue, al_get_keyboard_event_source());
         al_register_event_source(queue, al_get_display_event_source(disp));

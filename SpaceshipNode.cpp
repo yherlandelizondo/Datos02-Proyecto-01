@@ -17,6 +17,7 @@ class SpaceshipNode{
         SpaceshipNode* next;
         bool yMovement;
         int selectedColor;
+        int phase;
 
         int randomColor(){
             srand(time(NULL));
@@ -41,6 +42,7 @@ class SpaceshipNode{
             health = 100;
             id = 0;
             next = NULL;
+            phase = 0;
             yMovement = randomBool();
             selectedColor = randomColor();
             xCoord = 550;
@@ -48,9 +50,10 @@ class SpaceshipNode{
             yCoord = rand()%430;
         }
 
-        SpaceshipNode(int identifier){
-            this->id = identifier;
-            this->next = NULL;
+        SpaceshipNode(int identifier, int phaseNum){
+            this -> id = identifier;
+            this -> phase = phaseNum;
+            this -> next = NULL;
         }
 
         void setID(int identifier){

@@ -6,14 +6,17 @@ using namespace std;
 class SpaceshipList{
 
     SpaceshipNode* head;
+    int size;
     
     public:
         SpaceshipList(){
             head = NULL;
+            size = 0;
         }
 
-        void insert(int data){
-            SpaceshipNode* newNode = new SpaceshipNode(data);
+        void insert(int ID, int phase){
+            SpaceshipNode* newNode = new SpaceshipNode(ID, phase);
+            size++;
             newNode -> setNext(head);
             head = newNode;
         }
@@ -72,5 +75,9 @@ class SpaceshipList{
 
         void setHead(SpaceshipNode* data){
             head = data;
+        }
+
+        int getSize(){
+            return size;
         }
 };

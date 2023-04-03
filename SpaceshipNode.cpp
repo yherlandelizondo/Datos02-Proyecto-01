@@ -13,13 +13,16 @@ class SpaceshipNode{
         int random;
         int randomCol;
         SpaceshipNode* next;
-    public:
+        bool yMovement;
+        int selectedColor;
+
         int randomColor(){
             srand(time(NULL));
             randomCol = rand()%4;
             cout << random;
             return random;
         }
+
         bool randomBool(){
             srand(time(NULL));
             random = rand()%2;
@@ -28,10 +31,15 @@ class SpaceshipNode{
             }
             return false;    
         }
+
+    public:
+        
         SpaceshipNode(){
             health = 100;
             id = 0;
             next = NULL;
+            yMovement = randomBool();
+            selectedColor = randomColor();
         }
 
         SpaceshipNode(int identifier){
@@ -65,6 +73,8 @@ class SpaceshipNode{
                 return true;
             }
         }
+
+        
         
 
 };

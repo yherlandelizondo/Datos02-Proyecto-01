@@ -116,7 +116,7 @@ int main()
         blueimage = al_load_bitmap("sprite_blueEnemy.png");
         phases = start -> getPhases();
         bullets = start -> getBullets();
-        enemies = phases * 5 * spaceshipsPerWave();
+        enemies = phases * 5 * spaceshipsPerWave;
         spaceshipsSpeed = start -> getSpaceshipsSpeed();
         spaceshipsPerWave = start -> getSpaceshipsPerWave();
 

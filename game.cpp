@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <iostream>
+#include "Initializer.cpp"
 #include <allegro5/allegro5.h>
 #include <allegro5/allegro_image.h>
 #include <allegro5/allegro_font.h>
@@ -14,7 +15,6 @@ ALLEGRO_EVENT event;
 float spaceshipY = 215;
 float spaceshipX = 20;
 
-int timeToShoot = 2;
 int movementDistance = 5;
 
 int screenWidth = 640;
@@ -26,6 +26,12 @@ float timeSinceLastShoot = 0;
 bool bulletOnScreen = false;
 float shootInterval = 0.1;
 int bulletSpeed = 10;
+int bullets = 0;
+int level = 0;
+int spaceshipsSpeed = 0;
+int spaceshipsPerWave = 0;
+int phases = 0;
+int enemies = 0;
 
 ALLEGRO_TIMER *timer = NULL;
 ALLEGRO_BITMAP *spaceShipImage = NULL;
@@ -53,8 +59,9 @@ void shootBullet(){
 void updateBullet(){
     if(bulletOnScreen){
         bulletX += bulletSpeed;
-        if(bulletX > screenWidth){
+        if(bulletX > screenWidth && bullets > 0){
             bulletOnScreen = false;
+            bullets -= 1;
         }
     }
 }
@@ -62,7 +69,7 @@ void updateBullet(){
 //! Funtion to render the game
 void render(){
     al_clear_to_color(al_map_rgb(0, 0, 0));
-    al_draw_textf(font, al_map_rgb(255, 255, 255), 0, 0, 0, "BulletSpeed: %.1d BulletOnScreen: %.1d", bulletSpeed, bulletOnScreen);
+    al_draw_textf(font, al_map_rgb(255, 255, 255), 0, 0, 0, "BulletSpeed: %.1d Bullets: %.1d", bulletSpeed, bullets);
     al_draw_bitmap(spaceShipImage, spaceshipX, spaceshipY, 0);
     if(bulletOnScreen){
         al_draw_bitmap(bulletImage, bulletX, bulletY, 0);
@@ -79,109 +86,132 @@ void render(){
 //! Main funtion
 int main()
 {
-    //!Components initialization
-    al_init();
-    al_install_keyboard();
-    al_init_image_addon();
-    timer = al_create_timer(1.0 / 60.0);
-    queue = al_create_event_queue();
-    disp = al_create_display(screenWidth, screenHeight);
-    font= al_create_builtin_font();
-    spaceShipImage = al_load_bitmap("sprite_spaceship.png");
-    bulletImage = al_load_bitmap("sprite_bullet.png");
-    redimage = al_load_bitmap("sprite_redEnemy.png");
-    purpleimage = al_load_bitmap("sprite_purpleEnemy.png");
-    greenimage = al_load_bitmap("sprite_greenEnemy.png");
-    whiteimage = al_load_bitmap("sprite_whiteEnemy.png");
-    blueimage = al_load_bitmap("sprite_blueEnemy.png");
-    al_register_event_source(queue, al_get_keyboard_event_source());
-    al_register_event_source(queue, al_get_display_event_source(disp));
-    al_register_event_source(queue, al_get_timer_event_source(timer));
+    //!Difficulty selection
+    cout << "//////////////////////////////////////////////////////////////////////////\n";
+    cout << "Choose the difficulty of the game: \n1 -> Easy\n2 -> Medium\n3 -> Hard\n";
+    cout << "//////////////////////////////////////////////////////////////////////////\n";
+    cin >> level;
 
-    //!Antialiasing
-    al_set_new_display_option(ALLEGRO_SAMPLE_BUFFERS, 1, ALLEGRO_SUGGEST);
-    al_set_new_display_option(ALLEGRO_SAMPLES, 8, ALLEGRO_SUGGEST);
-    al_set_new_bitmap_flags(ALLEGRO_MIN_LINEAR | ALLEGRO_MAG_LINEAR);
+    if(level != 1 && level != 2 && level != 3){
+        cout << "Invalid input\n";
+        exit;
+    }else{
+        Initializer* start = new Initializer;
+        start->setLevel(level);
 
-    unsigned char key[ALLEGRO_KEY_MAX];
-    memset(key, 0, sizeof(key));
+        //!Components initialization
+        al_init();
+        al_install_keyboard();
+        al_init_image_addon();
+        timer = al_create_timer(1.0 / 60.0);
+        queue = al_create_event_queue();
+        disp = al_create_display(screenWidth, screenHeight);
+        font= al_create_builtin_font();
+        spaceShipImage = al_load_bitmap("sprite_spaceship.png");
+        bulletImage = al_load_bitmap("sprite_bullet.png");
+        redimage = al_load_bitmap("sprite_redEnemy.png");
+        purpleimage = al_load_bitmap("sprite_purpleEnemy.png");
+        greenimage = al_load_bitmap("sprite_greenEnemy.png");
+        whiteimage = al_load_bitmap("sprite_whiteEnemy.png");
+        blueimage = al_load_bitmap("sprite_blueEnemy.png");
+        phases = start -> getPhases();
+        bullets = start -> getBullets();
+        enemies = phases * 5 * spaceshipsPerWave();
+        spaceshipsSpeed = start -> getSpaceshipsSpeed();
+        spaceshipsPerWave = start -> getSpaceshipsPerWave();
 
-    #define KEY_SEEN     1
-    #define KEY_RELEASED 2
+        //! initialization of the spaceship list, and adding all the spaceships to the list
+        
 
-    al_start_timer(timer);
+        al_register_event_source(queue, al_get_keyboard_event_source());
+        al_register_event_source(queue, al_get_display_event_source(disp));
+        al_register_event_source(queue, al_get_timer_event_source(timer));
 
-    //!Main loop
-    while(1)
-    {
-        al_wait_for_event(queue, &event);
+        //!Antialiasing
+        al_set_new_display_option(ALLEGRO_SAMPLE_BUFFERS, 1, ALLEGRO_SUGGEST);
+        al_set_new_display_option(ALLEGRO_SAMPLES, 8, ALLEGRO_SUGGEST);
+        al_set_new_bitmap_flags(ALLEGRO_MIN_LINEAR | ALLEGRO_MAG_LINEAR);
 
-        switch(event.type)
+        unsigned char key[ALLEGRO_KEY_MAX];
+        memset(key, 0, sizeof(key));
+
+        #define KEY_SEEN     1
+        #define KEY_RELEASED 2
+
+        al_start_timer(timer);
+
+        //!Main loop
+        while(1)
         {
-            case ALLEGRO_EVENT_TIMER:
+            al_wait_for_event(queue, &event);
 
-                updateBullet();
-                timeSinceLastShoot += 1.0 / 60.0;
-                if (timeSinceLastShoot >= shootInterval){
-                    shootBullet();
-                    timeSinceLastShoot = 0;
-                }
-                if(key[ALLEGRO_KEY_W]){
-                    if(spaceshipY == 0){
-                        spaceshipY = 0;
-                    }else{
-                        spaceshipY -= movementDistance;
+            switch(event.type)
+            {
+                case ALLEGRO_EVENT_TIMER:
+
+                    updateBullet();
+                    timeSinceLastShoot += 1.0 / 60.0;
+                    if (timeSinceLastShoot >= shootInterval){
+                        shootBullet();
+                        timeSinceLastShoot = 0;
                     }
-                }  
-                if(key[ALLEGRO_KEY_S]){
-                    if(spaceshipY == 435){
-                        spaceshipY = 435;
-                    }else{
-                        spaceshipY += movementDistance;
+                    if(key[ALLEGRO_KEY_W]){
+                        if(spaceshipY == 0){
+                            spaceshipY = 0;
+                        }else{
+                            spaceshipY -= movementDistance;
+                        }
+                    }  
+                    if(key[ALLEGRO_KEY_S]){
+                        if(spaceshipY == 435){
+                            spaceshipY = 435;
+                        }else{
+                            spaceshipY += movementDistance;
+                        }
+                    }   
+                    if(key[ALLEGRO_KEY_O]){
+                        if(bulletSpeed < 50){
+                            bulletSpeed += 1;
+                        }
                     }
-                }   
-                if(key[ALLEGRO_KEY_O]){
-                    if(bulletSpeed < 50){
-                        bulletSpeed += 1;
+                    if(key[ALLEGRO_KEY_P]){
+                        if(bulletSpeed > 5){
+                            bulletSpeed -= 1;
+                        }
+                    } 
+                    if(key[ALLEGRO_KEY_ESCAPE]){
+                        done = true;
                     }
-                }
-                if(key[ALLEGRO_KEY_P]){
-                    if(bulletSpeed > 5){
-                        bulletSpeed -= 1;
-                    }
-                } 
-                if(key[ALLEGRO_KEY_ESCAPE]){
-                    done = true;
-                }
+                        
+                    for(int i = 0; i < ALLEGRO_KEY_MAX; i++)
+                        key[i] &= KEY_SEEN;
                     
-                for(int i = 0; i < ALLEGRO_KEY_MAX; i++)
-                    key[i] &= KEY_SEEN;
-                
-                render();
-                break;
+                    render();
+                    break;
 
-            case ALLEGRO_EVENT_KEY_DOWN:
-                key[event.keyboard.keycode] = KEY_SEEN | KEY_RELEASED;
-                break;
-            case ALLEGRO_EVENT_KEY_UP:
-                key[event.keyboard.keycode] &= KEY_RELEASED;
-                break;
+                case ALLEGRO_EVENT_KEY_DOWN:
+                    key[event.keyboard.keycode] = KEY_SEEN | KEY_RELEASED;
+                    break;
+                case ALLEGRO_EVENT_KEY_UP:
+                    key[event.keyboard.keycode] &= KEY_RELEASED;
+                    break;
 
-            case ALLEGRO_EVENT_DISPLAY_CLOSE:
-                done = true;
+                case ALLEGRO_EVENT_DISPLAY_CLOSE:
+                    done = true;
+                    break;
+            }
+
+            if(done)
                 break;
         }
+        
+        al_destroy_font(font);
+        al_destroy_bitmap(spaceShipImage);
+        al_destroy_bitmap(bulletImage);
+        al_destroy_display(disp);
+        al_destroy_timer(timer);
+        al_destroy_event_queue(queue);
 
-        if(done)
-            break;
-    }
-    
-    al_destroy_font(font);
-    al_destroy_bitmap(spaceShipImage);
-    al_destroy_bitmap(bulletImage);
-    al_destroy_display(disp);
-    al_destroy_timer(timer);
-    al_destroy_event_queue(queue);
-
-    return 0;
+        return 0;
+        }
 }

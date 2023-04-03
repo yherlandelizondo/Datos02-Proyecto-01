@@ -5,21 +5,19 @@ using namespace std;
 
 class Initializer{
     private:
-        int level;
-        int bullets;
-        int spaceshipsPerWave;
-        int spaceshipsSpeed;
-        int phases;
+        int level = 0;
+        int bullets = 0;
+        int spaceshipsPerWave = 0;
+        int spaceshipsSpeed = 0;
+        int phases = 0;
         //int spaceshipHealth;
-        int bulletDamage;
+        int bulletDamage = 0;
 
         //TODO: tambien se puede tomar la vida de las naves aqui
 
         void setValues(int level){
             //! 0=easy, 1=medium, 2=hard
-            switch (level)
-            {
-            case 0:
+            if(level == 1){
                 bullets = 200;
                 spaceshipsPerWave = 5;
                 spaceshipsSpeed = 10;
@@ -27,7 +25,7 @@ class Initializer{
                 //spaceshipHealth = 50;
                 bulletDamage = 25;
 
-            case 1:
+            }else if(level == 2){
                 bullets = 150;
                 spaceshipsPerWave = 5;
                 spaceshipsSpeed = 20;
@@ -35,7 +33,7 @@ class Initializer{
                 //spaceshipHealth = 50;
                 bulletDamage = 25;
 
-            case 2:
+            }else if(level == 3){
                 bullets = 150;
                 spaceshipsPerWave = 5;
                 spaceshipsSpeed = 25;
@@ -59,7 +57,10 @@ class Initializer{
             return bullets;
         }
 
-        int getSpaceshipsPerRound(){
+        int getPhases(){
+            return phases;
+        }
+        int getSpaceshipsPerWave(){
             return spaceshipsPerWave;
         }
 

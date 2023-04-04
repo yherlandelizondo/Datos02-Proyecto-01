@@ -135,7 +135,7 @@ int main()
             }
             enemies -= (spaceshipsPerWave * 5);
         };
-
+        cout << "list:"<< spaceList->getSize()<<"\n";
         al_register_event_source(queue, al_get_keyboard_event_source());
         al_register_event_source(queue, al_get_display_event_source(disp));
         al_register_event_source(queue, al_get_timer_event_source(timer));

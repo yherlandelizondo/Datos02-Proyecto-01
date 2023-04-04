@@ -17,7 +17,6 @@ class SpaceshipNode{
         SpaceshipNode* next;
         bool yMovement;
         int selectedColor;
-        int phase;
         int wave;
 
         int randomColor(){
@@ -36,8 +35,8 @@ class SpaceshipNode{
             return false;    
         }
         void setHealth(){
-            for(int i = 0; i <= phase; i++){
-                health += 50;
+            for(int i = 0; i <= wave; i++){
+                health += 10;
             }
         }
     public:
@@ -46,7 +45,6 @@ class SpaceshipNode{
             health = 0;
             id = 0;
             next = NULL;
-            phase = 0;
             yMovement = randomBool();
             selectedColor = randomColor();
             xCoord = 550;
@@ -54,9 +52,8 @@ class SpaceshipNode{
             yCoord = rand()%430;
         }
 
-        SpaceshipNode(int identifier, int phaseNum, int waveNum){
+        SpaceshipNode(int identifier, int waveNum){
             this -> id = identifier;
-            this -> phase = phaseNum;
             this -> wave = waveNum;
             this -> next = NULL;
             setHealth();
@@ -108,5 +105,8 @@ class SpaceshipNode{
             return yCoord;
         }
         
+        int getWave(){
+            return wave;
+        }
 
 };

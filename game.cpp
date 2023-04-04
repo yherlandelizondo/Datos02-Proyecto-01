@@ -35,7 +35,6 @@ int spaceshipsPerWave;
 int phases;
 int enemies;
 int ID = 0;
-int specificPhase = 0;
 int wave = 0;
 int aux1;
 int aux2;
@@ -131,17 +130,26 @@ int main()
         //!initialization of the spaceship list, and adding all the spaceships to the list
         SpaceshipList* spaceList = new SpaceshipList;
 
-        while(aux1 >= (spaceshipsPerWave * 5)){
-            specificPhase++;
-            if()
-            for(int i = 0; i != (spaceshipsPerWave * 5); i++){
-                
-                spaceList->insert(ID, specificPhase);
+        while(aux1 >= spaceshipsPerWave){
+            wave++;
+            //if()
+            for(int i = 0; i != spaceshipsPerWave; i++){
+                spaceList->insert(ID, wave);
                 ID++;
             }
-            aux1 -= (spaceshipsPerWave * 5);
+            aux1 -= spaceshipsPerWave;
         };
-        cout << "list:"<< spaceList->getSize()<<"\n";
+
+        //--------------------------------------------------------------------------
+        struct spaceArray spaceshipsOnSomeWave;
+        
+        spaceshipsOnSomeWave = spaceList->returnSpaceships(1, spaceshipsPerWave);
+
+        for(int i = 0; i > spaceshipsPerWave; i++){
+            cout << spaceshipsOnSomeWave.spaceshipsOnWave[i] << "\n";
+        }
+        //--------------------------------------------------------------------------
+
         al_register_event_source(queue, al_get_keyboard_event_source());
         al_register_event_source(queue, al_get_display_event_source(disp));
         al_register_event_source(queue, al_get_timer_event_source(timer));

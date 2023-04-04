@@ -3,6 +3,17 @@
 #include "SpaceshipNode.cpp"
 using namespace std;
 
+//!Struct to store the spaceships of some specific wave
+struct spaceArray{
+    /*int maxIndex;
+
+    int setMaxIndex(int index){
+        maxIndex = index;
+        return 0;
+    }*/
+    SpaceshipNode* spaceshipsOnWave[10];
+};
+
 class SpaceshipList{
 
     SpaceshipNode* head;
@@ -14,8 +25,8 @@ class SpaceshipList{
             size = 0;
         }
 
-        void insert(int ID, int phase, int wave){
-            SpaceshipNode* newNode = new SpaceshipNode(ID, phase, wave);
+        void insert(int ID, int wave){
+            SpaceshipNode* newNode = new SpaceshipNode(ID, wave);
             size++;
             newNode -> setNext(head);
             head = newNode;
@@ -41,10 +52,10 @@ class SpaceshipList{
             return 0;
         }
 
-        int remove(int value){
+        int remove(int id){
             SpaceshipNode* temp = head;
             while (temp != NULL){
-                if(temp -> getID() == value){
+                if(temp -> getID() == id){
                     removeAux(temp);
                     return 0;
                 }
@@ -71,6 +82,26 @@ class SpaceshipList{
 
         SpaceshipNode* getHead(){
             return head;
+        }
+
+        struct spaceArray returnSpaceships(int wave, int spaceshipsPerWave){
+
+            struct spaceArray arrayStruct;
+            //arrayStruct.setMaxIndex(spaceshipsPerWave);
+            int i = 0;
+            SpaceshipNode* temp3 = head;
+
+            while (temp3 != NULL){
+                cout <<"next: "<< temp3->getNext()->getID() << "\n";
+                if(temp3 -> getWave() == wave){
+                    arrayStruct.spaceshipsOnWave[i] = temp3;
+                }
+                else{
+                    temp3 = temp3 -> getNext();
+                }
+            }
+            i++;
+            return arrayStruct;
         }
 
         void setHead(SpaceshipNode* data){

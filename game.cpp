@@ -132,8 +132,8 @@ int main()
 
         while(aux1 >= spaceshipsPerWave){
             wave++;
-            //if()
             for(int i = 0; i != spaceshipsPerWave; i++){
+                //cout << wave << "\n";
                 spaceList->insert(ID, wave);
                 ID++;
             }
@@ -143,7 +143,7 @@ int main()
         //--------------------------------------------------------------------------
         struct spaceArray spaceshipsOnSomeWave;
         
-        spaceshipsOnSomeWave = spaceList->returnSpaceships(1, spaceshipsPerWave);
+        spaceshipsOnSomeWave = spaceList->returnSpaceships(9, spaceshipsPerWave);
 
         for(int i = 0; i > spaceshipsPerWave; i++){
             cout << spaceshipsOnSomeWave.spaceshipsOnWave[i] << "\n";

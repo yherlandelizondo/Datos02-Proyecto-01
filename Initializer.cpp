@@ -5,12 +5,12 @@ using namespace std;
 
 class Initializer{
     private:
-        int level = 0;
-        int bullets = 0;
-        int spaceshipsPerWave = 0;
-        int spaceshipsSpeed = 0;
-        int phases = 0;
-        int bulletDamage = 0;
+        int level;
+        int bullets;
+        int spaceshipsPerWave;
+        int spaceshipsSpeed;
+        int phases;
+        int bulletDamage;
 
 
         void setValues(int level){

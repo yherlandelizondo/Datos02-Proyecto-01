@@ -73,7 +73,7 @@ class SpaceshipList{
             }
             else{
                 while (temp1 != NULL){
-                    cout << temp1 -> getID() << "->";
+                    cout << temp1 -> getWave() << "->";
                     temp1 = temp1 -> getNext();
                 }
             }
@@ -85,16 +85,17 @@ class SpaceshipList{
         }
 
         struct spaceArray returnSpaceships(int wave, int spaceshipsPerWave){
+            SpaceshipNode* temp3 = head;
 
             struct spaceArray arrayStruct;
             //arrayStruct.setMaxIndex(spaceshipsPerWave);
             int i = 0;
-            SpaceshipNode* temp3 = head;
-
+            
             while (temp3 != NULL){
-                cout <<"next: "<< temp3->getNext()->getID() << "\n";
                 if(temp3 -> getWave() == wave){
+                    cout << temp3 -> getWave() << " == " << wave << "\n";
                     arrayStruct.spaceshipsOnWave[i] = temp3;
+                    temp3 = temp3 -> getNext();
                 }
                 else{
                     temp3 = temp3 -> getNext();

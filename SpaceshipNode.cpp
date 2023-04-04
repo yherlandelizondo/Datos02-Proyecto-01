@@ -22,7 +22,6 @@ class SpaceshipNode{
         int randomColor(){
             srand(time(NULL));
             randomCol = rand()%4;
-            cout << random;
             return random;
         }
 

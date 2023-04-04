@@ -16,21 +16,21 @@ class Initializer{
         void setValues(int level){
             //! 0=easy, 1=medium, 2=hard
             if(level == 1){
-                bullets = 200;
+                bullets = 130;
                 spaceshipsPerWave = 5;
                 spaceshipsSpeed = 10;
                 phases = 1;
                 bulletDamage = 25;
 
             }else if(level == 2){
-                bullets = 150;
+                bullets = 300;
                 spaceshipsPerWave = 5;
                 spaceshipsSpeed = 20;
                 phases = 2;
                 bulletDamage = 25;
 
             }else if(level == 3){
-                bullets = 150;
+                bullets = 600;
                 spaceshipsPerWave = 5;
                 spaceshipsSpeed = 25;
                 phases = 3;

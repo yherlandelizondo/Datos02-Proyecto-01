@@ -36,6 +36,9 @@ int phases;
 int enemies;
 int ID = 0;
 int specificPhase = 0;
+int wave = 0;
+int aux1;
+int aux2;
 
 ALLEGRO_TIMER *timer = NULL;
 ALLEGRO_BITMAP *spaceShipImage = NULL;
@@ -123,17 +126,20 @@ int main()
         spaceshipsSpeed = start -> getSpaceshipsSpeed();
         spaceshipsPerWave = start -> getSpaceshipsPerWave();
         enemies = phases * 5 * spaceshipsPerWave;
+        aux1 = enemies;
 
-        //! initialization of the spaceship list, and adding all the spaceships to the list
+        //!initialization of the spaceship list, and adding all the spaceships to the list
         SpaceshipList* spaceList = new SpaceshipList;
 
-        while(enemies >= (spaceshipsPerWave * 5)){
+        while(aux1 >= (spaceshipsPerWave * 5)){
             specificPhase++;
+            if()
             for(int i = 0; i != (spaceshipsPerWave * 5); i++){
+                
                 spaceList->insert(ID, specificPhase);
                 ID++;
             }
-            enemies -= (spaceshipsPerWave * 5);
+            aux1 -= (spaceshipsPerWave * 5);
         };
         cout << "list:"<< spaceList->getSize()<<"\n";
         al_register_event_source(queue, al_get_keyboard_event_source());

@@ -14,8 +14,8 @@ class SpaceshipList{
             size = 0;
         }
 
-        void insert(int ID, int phase){
-            SpaceshipNode* newNode = new SpaceshipNode(ID, phase);
+        void insert(int ID, int phase, int wave){
+            SpaceshipNode* newNode = new SpaceshipNode(ID, phase, wave);
             size++;
             newNode -> setNext(head);
             head = newNode;

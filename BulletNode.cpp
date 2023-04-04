@@ -7,14 +7,14 @@ class BulletNode{
 
     private:
         int id;
-        int levelDamage;
+        int damage;
         BulletNode* next;
 
     public:
         BulletNode(){
             id = 0;
             next = NULL;
-            levelDamage = 0;
+            damage = 50;
         }
 
         BulletNode(int identifier){

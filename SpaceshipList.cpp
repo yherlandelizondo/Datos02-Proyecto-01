@@ -5,13 +5,8 @@ using namespace std;
 
 //!Struct to store the spaceships of some specific wave
 struct spaceArray{
-    /*int maxIndex;
-
-    int setMaxIndex(int index){
-        maxIndex = index;
-        return 0;
-    }*/
     SpaceshipNode* spaceshipsOnWave[10];
+    int size = 0;
 };
 
 class SpaceshipList{
@@ -25,8 +20,8 @@ class SpaceshipList{
             size = 0;
         }
 
-        void insert(int ID, int wave){
-            SpaceshipNode* newNode = new SpaceshipNode(ID, wave);
+        void insert(int ID, int wave, int yCoord, int enemieSpeed){
+            SpaceshipNode* newNode = new SpaceshipNode(ID, wave, yCoord, enemieSpeed);
             size++;
             newNode -> setNext(head);
             head = newNode;
@@ -84,24 +79,23 @@ class SpaceshipList{
             return head;
         }
 
-        struct spaceArray returnSpaceships(int wave, int spaceshipsPerWave){
+        struct spaceArray returnSpaceships(int wave){
             SpaceshipNode* temp3 = head;
 
             struct spaceArray arrayStruct;
-            //arrayStruct.setMaxIndex(spaceshipsPerWave);
             int i = 0;
             
             while (temp3 != NULL){
                 if(temp3 -> getWave() == wave){
-                    cout << temp3 -> getWave() << " == " << wave << "\n";
                     arrayStruct.spaceshipsOnWave[i] = temp3;
+                    arrayStruct.size += 1;
                     temp3 = temp3 -> getNext();
+                    i++;
                 }
                 else{
                     temp3 = temp3 -> getNext();
                 }
             }
-            i++;
             return arrayStruct;
         }
 
@@ -112,4 +106,11 @@ class SpaceshipList{
         int getSize(){
             return size;
         }
+        //funcion que resiva las coordedas de la nuestra nave y de la bala y la oleada. y 
+        //que las verifique con los enemigos que hayan. Retorna true si hay una colision. tomar en cuenta los rangos 
+        //en la coordenada y, y la coordenada x.
+
+        // collitionDetector(bx, by, bh, sx, sy, sh, wave)
+        //que devuelva 4 valores, 1 indica si hubo colision minave/enemigo, 2 lo contrario a la 1
+        //3 indica colision bala/enemigo, 4 lo contrario a la 3
 };

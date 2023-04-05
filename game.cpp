@@ -28,16 +28,10 @@ float timeSinceLastShoot = 0;
 bool bulletOnScreen = false;
 float shootInterval = 0.1;
 int bulletSpeed = 10;
-int bullets;
-int level;
-int spaceshipsSpeed;
-int spaceshipsPerWave;
-int phases;
-int enemies;
-int ID = 0;
-int wave = 0;
-int aux1;
-int aux2;
+int bullets, level, spaceshipsSpeed, spaceshipsPerWave, phases, enemies, ID;
+int wave, aux1, enemiesOnScreen, enemieXCoord, enemieYCoord;
+int specificWave = 1;
+
 
 ALLEGRO_TIMER *timer = NULL;
 ALLEGRO_BITMAP *spaceShipImage = NULL;
@@ -47,10 +41,13 @@ ALLEGRO_BITMAP *greenimage = NULL;
 ALLEGRO_BITMAP *whiteimage = NULL;
 ALLEGRO_BITMAP *redimage = NULL;
 ALLEGRO_BITMAP *bulletImage = NULL;
+ALLEGRO_BITMAP *enemieSprite = NULL;
 ALLEGRO_EVENT_QUEUE *queue = NULL;
 ALLEGRO_DISPLAY* disp = NULL;
 ALLEGRO_FONT* font = NULL;
 
+SpaceshipList* spaceList = new SpaceshipList;
+struct spaceArray spaceshipsOnSomeWave;
 
 //!Function to update the bullet coords
 void shootBullet(){
@@ -62,13 +59,28 @@ void shootBullet(){
 }
 
 //!Function to update the bullet position
-void updateBullet(){
+void updateBullet(){ // verificacion de collisiones
     if(bulletOnScreen){
         bulletX += bulletSpeed;
         if(bulletX > screenWidth && bullets > 0){
             bulletOnScreen = false;
             bullets -= 1;
         }
+    }
+}
+
+void updateEnemies(struct spaceArray enemiesArray){ //recordar restar el valor de size en el stuct
+    for(int j = 0; j < enemiesArray.size; j++){
+        if(enemiesArray.spaceshipsOnWave[j]->getYMovement()){
+            enemiesArray.spaceshipsOnWave[j]->modifyXCoord();
+            enemiesArray.spaceshipsOnWave[j]->modifyYCoord();
+        }else{
+            enemiesArray.spaceshipsOnWave[j]->modifyXCoord();
+        }
+        enemieSprite = spaceshipsOnSomeWave.spaceshipsOnWave[j]->getColor();
+        enemieXCoord = spaceshipsOnSomeWave.spaceshipsOnWave[j]->getXCoord();
+        enemieYCoord = spaceshipsOnSomeWave.spaceshipsOnWave[j]->getYCoord();
+        al_draw_bitmap(enemieSprite, enemieXCoord, enemieYCoord, 1);
     }
 }
 
@@ -80,13 +92,20 @@ void render(){
     if(bulletOnScreen){
         al_draw_bitmap(bulletImage, bulletX, bulletY, 0);
     }
-    srand(time(NULL));
-    al_draw_bitmap(blueimage, 550, rand()%430, 1);
-    al_draw_bitmap(redimage, 550, rand()%430, 1);
-    al_draw_bitmap(greenimage, 550, rand()%430, 1);
-    al_draw_bitmap(purpleimage, 550, rand()%430, 1);
-    al_draw_bitmap(whiteimage, 550, rand()%430, 1);
-    al_flip_display();
+    spaceshipsOnSomeWave = spaceList->returnSpaceships(specificWave);
+    if(enemiesOnScreen != 0){
+        updateEnemies(spaceshipsOnSomeWave);
+    }else{
+        enemiesOnScreen += 5;
+        specificWave += 1;
+        for(int i = 0; i < spaceshipsPerWave; i++){
+            enemieSprite = spaceshipsOnSomeWave.spaceshipsOnWave[i]->getColor();
+            enemieXCoord = spaceshipsOnSomeWave.spaceshipsOnWave[i]->getXCoord();
+            enemieYCoord = spaceshipsOnSomeWave.spaceshipsOnWave[i]->getYCoord();
+            al_draw_bitmap(enemieSprite, enemieXCoord, enemieYCoord, 1);
+        }
+    }
+    al_flip_display(); 
 }
 
 //! Main funtion
@@ -96,6 +115,7 @@ int main()
     cout << "//////////////////////////////////////////////////////////////////////////\n";
     cout << "Choose the difficulty of the game: \n1 -> Easy\n2 -> Medium\n3 -> Hard\n";
     cout << "//////////////////////////////////////////////////////////////////////////\n";
+    cout << "Insert the difficulty number: ";
     cin >> level;
 
     if(level != 1 && level != 2 && level != 3){
@@ -115,11 +135,6 @@ int main()
         font = al_create_builtin_font();
         spaceShipImage = al_load_bitmap("sprite_spaceship.png");
         bulletImage = al_load_bitmap("sprite_bullet.png");
-        redimage = al_load_bitmap("sprite_redEnemy.png");
-        purpleimage = al_load_bitmap("sprite_purpleEnemy.png");
-        greenimage = al_load_bitmap("sprite_greenEnemy.png");
-        whiteimage = al_load_bitmap("sprite_whiteEnemy.png");
-        blueimage = al_load_bitmap("sprite_blueEnemy.png");
         phases = start -> getPhases();
         bullets = start -> getBullets();
         spaceshipsSpeed = start -> getSpaceshipsSpeed();
@@ -128,27 +143,16 @@ int main()
         aux1 = enemies;
 
         //!initialization of the spaceship list, and adding all the spaceships to the list
-        SpaceshipList* spaceList = new SpaceshipList;
-
+        srand(time(0));
         while(aux1 >= spaceshipsPerWave){
             wave++;
             for(int i = 0; i != spaceshipsPerWave; i++){
                 //cout << wave << "\n";
-                spaceList->insert(ID, wave);
+                spaceList->insert(ID, wave, rand()%430, start->getSpaceshipsSpeed());
                 ID++;
             }
             aux1 -= spaceshipsPerWave;
-        };
-
-        //--------------------------------------------------------------------------
-        struct spaceArray spaceshipsOnSomeWave;
-        
-        spaceshipsOnSomeWave = spaceList->returnSpaceships(9, spaceshipsPerWave);
-
-        for(int i = 0; i > spaceshipsPerWave; i++){
-            cout << spaceshipsOnSomeWave.spaceshipsOnWave[i] << "\n";
         }
-        //--------------------------------------------------------------------------
 
         al_register_event_source(queue, al_get_keyboard_event_source());
         al_register_event_source(queue, al_get_display_event_source(disp));
@@ -231,14 +235,19 @@ int main()
             if(done)
                 break;
         }
-        
+
         al_destroy_font(font);
         al_destroy_bitmap(spaceShipImage);
         al_destroy_bitmap(bulletImage);
+        al_destroy_bitmap(blueimage);
+        al_destroy_bitmap(purpleimage);
+        al_destroy_bitmap(greenimage);
+        al_destroy_bitmap(whiteimage);
+        al_destroy_bitmap(redimage);
         al_destroy_display(disp);
         al_destroy_timer(timer);
         al_destroy_event_queue(queue);
-
+        
         return 0;
         }
 };

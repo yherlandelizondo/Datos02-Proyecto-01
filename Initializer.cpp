@@ -18,21 +18,21 @@ class Initializer{
             if(level == 1){
                 bullets = 130;
                 spaceshipsPerWave = 5;
-                spaceshipsSpeed = 10;
+                spaceshipsSpeed = 2;
                 phases = 1;
                 bulletDamage = 25;
 
             }else if(level == 2){
                 bullets = 300;
                 spaceshipsPerWave = 5;
-                spaceshipsSpeed = 20;
+                spaceshipsSpeed = 4;
                 phases = 2;
                 bulletDamage = 25;
 
             }else if(level == 3){
                 bullets = 600;
                 spaceshipsPerWave = 5;
-                spaceshipsSpeed = 25;
+                spaceshipsSpeed = 8;
                 phases = 3;
                 bulletDamage = 25;
             }

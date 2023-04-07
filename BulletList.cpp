@@ -1,27 +1,73 @@
 #include <iostream>
 #include <stdio.h>
-#include "bulletNode.cpp"
-
+#include "BulletNode.cpp"
+#include "BulletCollector.cpp"
 using namespace std;
+
+BulletCollector collector;
+
+//! Overloading operator delete, this funtion is used to insert bullets on BulletCollector
+void operator delete(void* ptr){ 
+    collector.insert(ptr);
+}
 
 class BulletList{
 
     BulletNode* head;
+    int size;
 
     public:
         BulletList(){
             head=NULL;
+            size = 0;
         }
 
-        void insert(int data){
-            BulletNode* newNode = new BulletNode(data);
+        void insert(int ID, int damage){
+            BulletNode* newNode = new BulletNode(ID, damage);
             newNode -> setNext(head);
             head = newNode;
+            size += 1;
         }
 
-        BulletNode* removeAux(BulletNode* node){
+        //!This function is used to remove bullets from the list when the bullet hit some enemie
+        int hitRemove(int id){
             BulletNode* temp = head;
-            delete node;
+            while (temp != NULL){
+                if(temp -> getID() == id){
+                    removeAux(temp, false);
+                    return 0;
+                }
+                else{
+                    temp = temp -> getNext();
+                }
+            }
+            cout<< "Node not found.\n";
+            return 0;
+        }
+
+        //!This function is used to remove bullets from the list when the bullet don't hit an enemie
+        int noHitRemove(int id){
+            BulletNode* temp = head;
+            size -= 1;
+            while(temp != NULL){
+                if(temp -> getID() == id){
+                    removeAux(temp, true);
+                    return 0;
+                }else{
+                    temp = temp->getNext();
+                }
+            }
+            cout<< "Node not found.\n";
+            return 0;
+        }
+        //!auxiliar funtion to delete bullets from the list
+        BulletNode* removeAux(BulletNode* node, bool coll){
+            BulletNode* temp = head;
+            if(coll){
+                //!reducing the bullet damage and adding to the collector list
+                node->reduceDamage();
+                delete node;
+            }
             while(temp != NULL){
                 if(temp -> getID() == node -> getID()){
                     head = head -> getNext();
@@ -38,20 +84,6 @@ class BulletList{
             return 0;
         }
 
-        int remove(int value){
-            BulletNode* temp = head;
-            while (temp != NULL){
-                if(temp -> getID() == value){
-                    removeAux(temp);
-                    return 0;
-                }
-                else{
-                    temp = temp -> getNext();
-                }
-            }
-            return 0;
-        }
-
         BulletNode* getHead(){
             return head;
         }
@@ -59,4 +91,12 @@ class BulletList{
         void setHead(BulletNode* data){
             head = data;
         }   
+
+        int getSize(){
+            return size;
+        }
+
+        BulletCollector getCollector(){
+            return collector;
+        }
 };

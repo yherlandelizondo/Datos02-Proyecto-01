@@ -14,12 +14,13 @@ class BulletNode{
         BulletNode(){
             id = 0;
             next = NULL;
-            damage = 50;
+            damage = 0;
         }
 
-        BulletNode(int identifier){
-            this->id=identifier;
-            this->next=NULL;
+        BulletNode(int identifier, int dmg){
+            this -> id = identifier;
+            this -> next = NULL;
+            this -> damage = dmg
         }
 
         void setID(int identifier){
@@ -31,9 +32,17 @@ class BulletNode{
         }
 
         void setNext(BulletNode* ptr){
-            next=ptr;
+            next = ptr;
         }
 
+        int getDamage(){
+            return damage;
+        }
+
+        void reduceDamage(){
+            damage /= 2;
+        }
+        
         BulletNode* getNext(){
             return next;
         }

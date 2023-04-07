@@ -33,7 +33,7 @@ float timeSinceLastShoot, timeSinceLastYUpdate = 0;
 bool bulletOnScreen = false;
 float shootInterval = 0.1;
 int bulletSpeed = 20;
-int bullets, level, spaceshipsSpeed, spaceshipsPerWave, phases, enemies, ID, condition;
+int bullets, level, spaceshipsSpeed, spaceshipsPerWave, phases, enemies, ID, condition, bulletID;
 int wave, aux1, enemiesOnScreen, enemieXCoord, enemieYCoord;
 int specificWave = 0;
 
@@ -101,7 +101,7 @@ void render(){
         cout << "           YOU WON\n";
         cout << "       CONGRATULATIONS!\n";  
         cout << "*****************************\n";
-        exit(1); 
+        done = true;
     }
     else{
         if (enemiesOnScreen == 0){
@@ -126,7 +126,6 @@ void render(){
     
             //!Using the collition detector return to modify some enemies or finish the game
             if(condition == 8){ //!you hit an enemie with a bullet
-                cout << "hi boyyyyy\n";
                 bulletOnScreen = false;
                 timeSinceLastYUpdate = 0;
                 spaceshipsOnSomeWave = spaceList->returnSpaceships(specificWave);
@@ -146,7 +145,7 @@ void render(){
                 cout << "        GAME OVER\n";
                 cout << " An enemy crossed the limit\n";  
                 cout << "*****************************\n";
-                exit(1);   
+                done = true;  
 
             }else if(condition == 9){
                 cout << "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n";
@@ -154,7 +153,7 @@ void render(){
                 cout << "        GAME OVER\n";
                 cout << "An enemy hit your spaceship\n";  
                 cout << "*****************************\n";
-                exit(1);  
+                done = true; 
 
             }else{
                 updateEnemies(spaceshipsOnSomeWave);

@@ -22,24 +22,24 @@ int movementDistance = 5;
 int screenWidth = 640;
 int screenHeight = 480;
 
+int bulletHeight = 40;
+int bulletLength = 40;
+int spaceshipHeight = 46;
+int spaceshipLength = 80;
+
 float bulletX = spaceshipX;
 float bulletY = spaceshipY;
-float timeSinceLastShoot = 0;
+float timeSinceLastShoot, timeSinceLastYUpdate = 0;
 bool bulletOnScreen = false;
 float shootInterval = 0.1;
-int bulletSpeed = 10;
-int bullets, level, spaceshipsSpeed, spaceshipsPerWave, phases, enemies, ID;
+int bulletSpeed = 20;
+int bullets, level, spaceshipsSpeed, spaceshipsPerWave, phases, enemies, ID, condition;
 int wave, aux1, enemiesOnScreen, enemieXCoord, enemieYCoord;
-int specificWave = 1;
+int specificWave = 0;
 
 
 ALLEGRO_TIMER *timer = NULL;
 ALLEGRO_BITMAP *spaceShipImage = NULL;
-ALLEGRO_BITMAP *blueimage = NULL;
-ALLEGRO_BITMAP *purpleimage = NULL;
-ALLEGRO_BITMAP *greenimage = NULL;
-ALLEGRO_BITMAP *whiteimage = NULL;
-ALLEGRO_BITMAP *redimage = NULL;
 ALLEGRO_BITMAP *bulletImage = NULL;
 ALLEGRO_BITMAP *enemieSprite = NULL;
 ALLEGRO_EVENT_QUEUE *queue = NULL;
@@ -48,6 +48,7 @@ ALLEGRO_FONT* font = NULL;
 
 SpaceshipList* spaceList = new SpaceshipList;
 struct spaceArray spaceshipsOnSomeWave;
+Initializer* start = new Initializer;
 
 //!Function to update the bullet coords
 void shootBullet(){
@@ -74,6 +75,7 @@ void updateEnemies(struct spaceArray enemiesArray){ //recordar restar el valor d
         if(enemiesArray.spaceshipsOnWave[j]->getYMovement()){
             enemiesArray.spaceshipsOnWave[j]->modifyXCoord();
             enemiesArray.spaceshipsOnWave[j]->modifyYCoord();
+            timeSinceLastYUpdate = 0;  
         }else{
             enemiesArray.spaceshipsOnWave[j]->modifyXCoord();
         }
@@ -87,31 +89,86 @@ void updateEnemies(struct spaceArray enemiesArray){ //recordar restar el valor d
 //! Funtion to render the game
 void render(){
     al_clear_to_color(al_map_rgb(0, 0, 0));
-    al_draw_textf(font, al_map_rgb(255, 255, 255), 0, 0, 0, "BulletSpeed: %.1d Bullets: %.1d", bulletSpeed, bullets);
+    al_draw_textf(font, al_map_rgb(255, 255, 255), 0, 0, 0, " Actual wave: %.1d Bullets: %.1d EnemiesOnScreen: %.1d", specificWave, bullets, enemiesOnScreen);
     al_draw_bitmap(spaceShipImage, spaceshipX, spaceshipY, 0);
+
     if(bulletOnScreen){
         al_draw_bitmap(bulletImage, bulletX, bulletY, 0);
     }
-    spaceshipsOnSomeWave = spaceList->returnSpaceships(specificWave);
-    if(enemiesOnScreen != 0){
-        updateEnemies(spaceshipsOnSomeWave);
-    }else{
-        enemiesOnScreen += 5;
-        specificWave += 1;
-        for(int i = 0; i < spaceshipsPerWave; i++){
-            enemieSprite = spaceshipsOnSomeWave.spaceshipsOnWave[i]->getColor();
-            enemieXCoord = spaceshipsOnSomeWave.spaceshipsOnWave[i]->getXCoord();
-            enemieYCoord = spaceshipsOnSomeWave.spaceshipsOnWave[i]->getYCoord();
-            al_draw_bitmap(enemieSprite, enemieXCoord, enemieYCoord, 1);
-        }
+    if (specificWave == phases * 5 + 1){
+        cout << "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n";
+        cout << "*****************************\n";
+        cout << "           YOU WON\n";
+        cout << "       CONGRATULATIONS!\n";  
+        cout << "*****************************\n";
+        exit(1); 
     }
-    al_flip_display(); 
-}
+    else{
+        if (enemiesOnScreen == 0){
+            specificWave += 1;
 
+            if(specificWave < phases * 5 + 1){
+                spaceshipsOnSomeWave = spaceList->returnSpaceships(specificWave);
+                enemiesOnScreen = spaceshipsOnSomeWave.size;
+
+                for(int i = 0; i < spaceshipsPerWave; i++){
+                    enemieSprite = spaceshipsOnSomeWave.spaceshipsOnWave[i]->getColor();
+                    enemieXCoord = spaceshipsOnSomeWave.spaceshipsOnWave[i]->getXCoord();
+                    enemieYCoord = spaceshipsOnSomeWave.spaceshipsOnWave[i]->getYCoord();
+                    al_draw_bitmap(enemieSprite, enemieXCoord, enemieYCoord, 1);
+                }
+                updateEnemies(spaceshipsOnSomeWave);
+            }
+            
+        }else{
+            //!collition detector:
+            condition = spaceList->collitionDetector(bulletX, bulletY, bulletHeight, bulletLength, spaceshipX, spaceshipY, spaceshipHeight, spaceshipLength, specificWave, start->getBulletDamage(), enemiesOnScreen);
+    
+            //!Using the collition detector return to modify some enemies or finish the game
+            if(condition == 8){ //!you hit an enemie with a bullet
+                cout << "hi boyyyyy\n";
+                bulletOnScreen = false;
+                timeSinceLastYUpdate = 0;
+                spaceshipsOnSomeWave = spaceList->returnSpaceships(specificWave);
+                enemiesOnScreen = spaceshipsOnSomeWave.size;
+
+                for(int i = 0; i < spaceshipsOnSomeWave.size; i++){
+                    enemieSprite = spaceshipsOnSomeWave.spaceshipsOnWave[i]->getColor();
+                    enemieXCoord = spaceshipsOnSomeWave.spaceshipsOnWave[i]->getXCoord();
+                    enemieYCoord = spaceshipsOnSomeWave.spaceshipsOnWave[i]->getYCoord();
+                    al_draw_bitmap(enemieSprite, enemieXCoord, enemieYCoord, 1);
+                }
+                updateEnemies(spaceshipsOnSomeWave);
+            
+            }else if(condition == 10){
+                cout << "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n";
+                cout << "*****************************\n";
+                cout << "        GAME OVER\n";
+                cout << " An enemy crossed the limit\n";  
+                cout << "*****************************\n";
+                exit(1);   
+
+            }else if(condition == 9){
+                cout << "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n";
+                cout << "*****************************\n";
+                cout << "        GAME OVER\n";
+                cout << "An enemy hit your spaceship\n";  
+                cout << "*****************************\n";
+                exit(1);  
+
+            }else{
+                updateEnemies(spaceshipsOnSomeWave);
+            }
+        }
+    al_flip_display(); 
+    }
+    
+}
 //! Main funtion
 int main()
 {
     //!Difficulty selection
+    cout << "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n";
     cout << "//////////////////////////////////////////////////////////////////////////\n";
     cout << "Choose the difficulty of the game: \n1 -> Easy\n2 -> Medium\n3 -> Hard\n";
     cout << "//////////////////////////////////////////////////////////////////////////\n";
@@ -120,9 +177,8 @@ int main()
 
     if(level != 1 && level != 2 && level != 3){
         cout << "Invalid input\n";
-        exit;
+        exit(1);
     }else{
-        Initializer* start = new Initializer;
         start->setLevel(level);
 
         //!Components initialization
@@ -141,19 +197,19 @@ int main()
         spaceshipsPerWave = start -> getSpaceshipsPerWave();
         enemies = phases * 5 * spaceshipsPerWave;
         aux1 = enemies;
+        srand(time(0));
 
         //!initialization of the spaceship list, and adding all the spaceships to the list
-        srand(time(0));
         while(aux1 >= spaceshipsPerWave){
             wave++;
             for(int i = 0; i != spaceshipsPerWave; i++){
-                //cout << wave << "\n";
-                spaceList->insert(ID, wave, rand()%430, start->getSpaceshipsSpeed());
+                spaceList->insert(ID, wave, rand()%430, start->getSpaceshipsSpeed(), rand()%4, rand()%2);
                 ID++;
             }
             aux1 -= spaceshipsPerWave;
         }
 
+        spaceshipsOnSomeWave = spaceList->returnSpaceships(1);
         al_register_event_source(queue, al_get_keyboard_event_source());
         al_register_event_source(queue, al_get_display_event_source(disp));
         al_register_event_source(queue, al_get_timer_event_source(timer));
@@ -179,8 +235,8 @@ int main()
             switch(event.type)
             {
                 case ALLEGRO_EVENT_TIMER:
-
                     updateBullet();
+                    timeSinceLastYUpdate += 1.0 / 60.0;
                     timeSinceLastShoot += 1.0 / 60.0;
                     if (timeSinceLastShoot >= shootInterval){
                         shootBullet();
@@ -200,12 +256,12 @@ int main()
                             spaceshipY += movementDistance;
                         }
                     }   
-                    if(key[ALLEGRO_KEY_O]){
+                    if(key[ALLEGRO_KEY_D]){
                         if(bulletSpeed < 50){
                             bulletSpeed += 1;
                         }
                     }
-                    if(key[ALLEGRO_KEY_P]){
+                    if(key[ALLEGRO_KEY_A]){
                         if(bulletSpeed > 5){
                             bulletSpeed -= 1;
                         }
@@ -239,11 +295,7 @@ int main()
         al_destroy_font(font);
         al_destroy_bitmap(spaceShipImage);
         al_destroy_bitmap(bulletImage);
-        al_destroy_bitmap(blueimage);
-        al_destroy_bitmap(purpleimage);
-        al_destroy_bitmap(greenimage);
-        al_destroy_bitmap(whiteimage);
-        al_destroy_bitmap(redimage);
+        al_destroy_bitmap(enemieSprite);
         al_destroy_display(disp);
         al_destroy_timer(timer);
         al_destroy_event_queue(queue);

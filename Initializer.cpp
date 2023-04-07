@@ -18,23 +18,23 @@ class Initializer{
             if(level == 1){
                 bullets = 130;
                 spaceshipsPerWave = 5;
-                spaceshipsSpeed = 2;
+                spaceshipsSpeed = 1; // values between 1 and 2
                 phases = 1;
                 bulletDamage = 25;
 
             }else if(level == 2){
                 bullets = 300;
                 spaceshipsPerWave = 5;
-                spaceshipsSpeed = 4;
+                spaceshipsSpeed = 2.5;// values between 2 and 3
                 phases = 2;
                 bulletDamage = 25;
 
             }else if(level == 3){
                 bullets = 600;
                 spaceshipsPerWave = 5;
-                spaceshipsSpeed = 8;
+                spaceshipsSpeed = 2.7;// values between 3 and 4
                 phases = 3;
-                bulletDamage = 25;
+                bulletDamage = 50;
             }
         }
         
@@ -61,5 +61,8 @@ class Initializer{
 
         int getSpaceshipsSpeed(){
             return spaceshipsSpeed;
+        }
+        int getBulletDamage(){
+            return bulletDamage;
         }
 };

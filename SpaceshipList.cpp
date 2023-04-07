@@ -13,15 +13,18 @@ class SpaceshipList{
 
     SpaceshipNode* head;
     int size;
+    int event;
+    int auxiliarEvent;
     
     public:
         SpaceshipList(){
             head = NULL;
             size = 0;
+            size = 7;
         }
 
-        void insert(int ID, int wave, int yCoord, int enemieSpeed){
-            SpaceshipNode* newNode = new SpaceshipNode(ID, wave, yCoord, enemieSpeed);
+        void insert(int ID, int wave, int yCoord, int enemieSpeed, int randSrite, int direction){
+            SpaceshipNode* newNode = new SpaceshipNode(ID, wave, yCoord, enemieSpeed, randSrite, direction);
             size++;
             newNode -> setNext(head);
             head = newNode;
@@ -68,7 +71,7 @@ class SpaceshipList{
             }
             else{
                 while (temp1 != NULL){
-                    cout << temp1 -> getWave() << "->";
+                    cout << temp1 -> getXCoord() << "->";
                     temp1 = temp1 -> getNext();
                 }
             }
@@ -106,11 +109,43 @@ class SpaceshipList{
         int getSize(){
             return size;
         }
-        //funcion que resiva las coordedas de la nuestra nave y de la bala y la oleada. y 
-        //que las verifique con los enemigos que hayan. Retorna true si hay una colision. tomar en cuenta los rangos 
-        //en la coordenada y, y la coordenada x.
-
-        // collitionDetector(bx, by, bh, sx, sy, sh, wave)
-        //que devuelva 4 valores, 1 indica si hubo colision minave/enemigo, 2 lo contrario a la 1
-        //3 indica colision bala/enemigo, 4 lo contrario a la 3
+        int collitionDetector(int bulletX, int bulletY, int bulletHeight, int bulletLength, int spaceshipX, int spaceshipY, int spaceshipHeight, int spaceshipLength, int wave, int bulletDamage, int enemiesOnScreen){
+            //si colisciona con la nave o si la pasó el limite 7, si le da la bala 8 y si no pasa nada 9
+            SpaceshipNode* temp4 = head;
+            struct spaceArray arrayStruct;
+            int l = 0;
+            while (temp4 != NULL){
+                if(temp4 -> getWave() == wave){    
+                    //!check if the bullet touch some enemie.
+                    if((bulletY + bulletHeight > temp4 -> getYCoord()) && (bulletY + bulletHeight < temp4 -> getYCoord() + spaceshipLength) && (bulletX + bulletLength > temp4 -> getXCoord()) && (bulletX + bulletLength < temp4 -> getXCoord() + bulletLength)){
+                        event = 8;
+                        if((temp4->getHealth() - bulletDamage) > 0){
+                            temp4->applyDamage(bulletDamage);
+                        }else{
+                            remove(temp4->getID());
+                        } 
+                        break;
+                    }
+                    //!check if the spaceship touch some enemie
+                    if((spaceshipY + spaceshipHeight > temp4 -> getYCoord()) && (spaceshipY < temp4 -> getYCoord() + spaceshipHeight) && (spaceshipX + spaceshipLength > temp4 -> getXCoord()) && (spaceshipX + spaceshipLength < temp4 -> getXCoord() + spaceshipLength)){
+                        event = 9;
+                        break;
+                    }
+                    //!check if the xCoord of an enemie it's less than 0
+                    if(temp4->getXCoord() < 0){
+                        event = 10;
+                        break;
+                    }
+                    if(enemiesOnScreen == 0){
+                        event = 11;
+                        break;
+                    }
+                }
+                temp4 = temp4 -> getNext();
+                l++;
+            }
+            auxiliarEvent = event;
+            event = 0;
+            return auxiliarEvent;
+        } 
 };

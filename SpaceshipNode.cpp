@@ -18,20 +18,19 @@ class SpaceshipNode{
         int yCoord;
         SpaceshipNode* next;
         bool yMovement;
-        int selectedColor;
+        int selectedSprite;
         int wave;
         int enemieSpeed;
         int upOrDown;
         ALLEGRO_BITMAP *enemySprite = NULL;
+        ALLEGRO_BITMAP *sprite;
 
-        int randomColor(){
-            srand(time(NULL));
+
+        /*void randomColor(){
             randomCol = rand()%4;
-            return random;
-        }
+        }*/
 
         bool randomBool(){
-            srand(time(NULL));
             random = rand()%2;
             if(random){
                 return true;
@@ -44,18 +43,20 @@ class SpaceshipNode{
             }
         }
 
-        SpaceshipNode(int identifier, int waveNum, int yCoor, int speed){
+        SpaceshipNode(int identifier, int waveNum, int yCoor, int speed, int randSprite, int direction){
             this -> id = identifier;
             this -> wave = waveNum;
             this -> next = NULL;
-            this -> xCoord = 550;
+            this -> xCoord = 590;
             this -> yCoord = yCoor;
             this -> health = 0;
+            this -> upOrDown = direction;
             this -> yMovement = randomBool();
-            this -> selectedColor = randomColor();
+            this -> randomBool();
+            this -> selectedSprite = randSprite;
+            this -> sprite = applySprite();
             this -> enemieSpeed = speed;
-            setHealth();
-            applyColor();
+            this -> setHealth();
         }
 
         void setID(int identifier){
@@ -83,18 +84,19 @@ class SpaceshipNode{
                 return true;
             }
         }
-        void applyColor(){
-            if(selectedColor == 0){
+        ALLEGRO_BITMAP* applySprite(){
+            if(selectedSprite == 0){
                 enemySprite = al_load_bitmap("sprite_blueEnemy.png");
-            }else if(selectedColor == 1){
+            }else if(selectedSprite == 1){
                 enemySprite = al_load_bitmap("sprite_greenEnemy.png");
-            }else if(selectedColor == 2){
+            }else if(selectedSprite == 2){
                 enemySprite = al_load_bitmap("sprite_redEnemy.png");
-            }else if(selectedColor == 3){
+            }else if(selectedSprite == 3){
                 enemySprite = al_load_bitmap("sprite_purpleEnemy.png");
-            }else if(selectedColor == 4){
+            }else if(selectedSprite == 4){
                 enemySprite = al_load_bitmap("sprite_whiteEnemy.png");
             }
+            return enemySprite;
         }
         int getXCoord(){
             return xCoord;
@@ -106,17 +108,15 @@ class SpaceshipNode{
             xCoord -= enemieSpeed;
         }
         void modifyYCoord(){
-            srand(time(0));
-            upOrDown = rand()%2;
             if(upOrDown == 0){
-                if(yCoord + 10 < 335){
-                    yCoord += 10;
+                if(yCoord + 1 < 435){
+                    yCoord += 1;
                 }else{
-                    yCoord = 335;
+                    yCoord = 435;
                 }
             }else{
-                if(yCoord - 10 > 0){
-                    yCoord -= 10;
+                if(yCoord - 1 > 0){
+                    yCoord -= 1;
                 }else{
                     yCoord = 0;
                 }
@@ -127,10 +127,13 @@ class SpaceshipNode{
         }
 
         ALLEGRO_BITMAP* getColor(){
-            return enemySprite;
+            return sprite;
         }
         int getYMovement(){
             return yMovement;
+        }
+        int getHealth(){
+            return health;
         }
 
 };

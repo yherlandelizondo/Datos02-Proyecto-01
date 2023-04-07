@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <iostream>
 #include <time.h>
+#include "BulletList.cpp"
 #include "Initializer.cpp"
 #include "SpaceshipList.cpp"
 #include <allegro5/allegro5.h>
@@ -30,12 +31,14 @@ int spaceshipLength = 80;
 float bulletX = spaceshipX;
 float bulletY = spaceshipY;
 float timeSinceLastShoot, timeSinceLastYUpdate = 0;
-bool bulletOnScreen = false;
+bool bulletOnScreen, usingCollector = false;
 float shootInterval = 0.1;
 int bulletSpeed = 20;
-int bullets, level, spaceshipsSpeed, spaceshipsPerWave, phases, enemies, ID, condition, bulletID;
+int level, spaceshipsSpeed, spaceshipsPerWave, phases, enemies, ID, condition;
 int wave, aux1, enemiesOnScreen, enemieXCoord, enemieYCoord;
-int specificWave = 0;
+int bulletID, specificWave = 0;
+int bullets = 1;
+int useCollector = true;
 
 
 ALLEGRO_TIMER *timer = NULL;
@@ -49,6 +52,7 @@ ALLEGRO_FONT* font = NULL;
 SpaceshipList* spaceList = new SpaceshipList;
 struct spaceArray spaceshipsOnSomeWave;
 Initializer* start = new Initializer;
+BulletList* bulletList = new BulletList;
 
 //!Function to update the bullet coords
 void shootBullet(){
@@ -56,16 +60,31 @@ void shootBullet(){
         bulletX = spaceshipX;
         bulletY = spaceshipY;
         bulletOnScreen = true;
+        bulletID++;
+        bulletList->insert(bulletID, start->getBulletDamage());
     }
 }
 
-//!Function to update the bullet position
+//!Function to update the bullet position and add bullet to collector
 void updateBullet(){ // verificacion de collisiones
     if(bulletOnScreen){
         bulletX += bulletSpeed;
+        if(bullets == 0){
+            usingCollector = true;
+            if(useCollector){
+                bullets = bulletList->getCollector().bulletsOnCollector();
+                start->setDamage(bulletList->getCollector().getDamage());
+                useCollector = false;
+            }
+            
+            //cout << bulletList->getCollector().getSize() - 1058<< " balas en el collector\n";
+        }
         if(bulletX > screenWidth && bullets > 0){
             bulletOnScreen = false;
             bullets -= 1;
+            if(useCollector){
+                bulletList->noHitRemove(bulletID);
+            }
         }
     }
 }
@@ -89,7 +108,12 @@ void updateEnemies(struct spaceArray enemiesArray){ //recordar restar el valor d
 //! Funtion to render the game
 void render(){
     al_clear_to_color(al_map_rgb(0, 0, 0));
-    al_draw_textf(font, al_map_rgb(255, 255, 255), 0, 0, 0, " Actual wave: %.1d Bullets: %.1d EnemiesOnScreen: %.1d", specificWave, bullets, enemiesOnScreen);
+    if(usingCollector){
+        al_draw_textf(font, al_map_rgb(255, 255, 255), 0, 0, 0, " Actual wave: %.1d Bullets: %.1d UsingCollector: true", specificWave, bullets);
+    }else{
+        al_draw_textf(font, al_map_rgb(255, 255, 255), 0, 0, 0, " Actual wave: %.1d Bullets: %.1d", specificWave, bullets);
+    }
+    
     al_draw_bitmap(spaceShipImage, spaceshipX, spaceshipY, 0);
 
     if(bulletOnScreen){
@@ -127,6 +151,8 @@ void render(){
             //!Using the collition detector return to modify some enemies or finish the game
             if(condition == 8){ //!you hit an enemie with a bullet
                 bulletOnScreen = false;
+                bullets -= 1;
+                bulletList -> hitRemove(bulletID);
                 timeSinceLastYUpdate = 0;
                 spaceshipsOnSomeWave = spaceList->returnSpaceships(specificWave);
                 enemiesOnScreen = spaceshipsOnSomeWave.size;

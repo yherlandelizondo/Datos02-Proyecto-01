@@ -15,6 +15,7 @@ class BulletList{
 
     BulletNode* head;
     int size;
+    int bulletDamage;
 
     public:
         BulletList(){
@@ -26,6 +27,7 @@ class BulletList{
             BulletNode* newNode = new BulletNode(ID, damage);
             newNode -> setNext(head);
             head = newNode;
+            this -> bulletDamage = damage;
             size += 1;
         }
 
@@ -35,6 +37,7 @@ class BulletList{
             while (temp != NULL){
                 if(temp -> getID() == id){
                     removeAux(temp, false);
+                    cout << "Bullet deleted\n";
                     return 0;
                 }
                 else{
@@ -67,6 +70,7 @@ class BulletList{
                 //!reducing the bullet damage and adding to the collector list
                 node->reduceDamage();
                 delete node;
+                collector.setDamage(bulletDamage);
             }
             while(temp != NULL){
                 if(temp -> getID() == node -> getID()){

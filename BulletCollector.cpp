@@ -7,12 +7,15 @@ class BulletCollector{
     
     CollectorNode* head;
     int size;
+    int bulletNum;
+    int bulletDamage;
     
     public:
         //! constructor method
         BulletCollector(){
             head = NULL;
-            size = 0;
+            this -> size = 0;
+            
         }
         //! method to insert a node at the beginnig of the list
         void insert(void* ptr){
@@ -22,12 +25,22 @@ class BulletCollector{
             head = newCollectorNode;
             size++;
         }   
-        //! method used to use a bullet
-        void* useBullet(){
-            CollectorNode* bullet = head;
-            head = head->next;
-            size--;
-            return bullet->getMemPtr();
+        //! method used to return the number of bullets stored on collector list
+        int bulletsOnCollector(){
+            CollectorNode* temp = head;
+            if(head == NULL){
+                return 0;
+            }
+
+            while(temp != NULL){
+                bulletNum++;
+                temp = temp->next;
+            }
+            cout << "bulletNum: " << bulletNum << "\n";
+            return bulletNum;
+        }
+        void setDamage(int damage){
+            bulletDamage = damage;
         }
         //! method to print the list elements
         void printList(){
@@ -48,6 +61,9 @@ class BulletCollector{
             return head;
         }
         
+        int getDamage(){
+            return bulletDamage;
+        }
         int getSize(){
             return size;
         }

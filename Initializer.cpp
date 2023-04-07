@@ -16,23 +16,23 @@ class Initializer{
         void setValues(int level){
             //! 0=easy, 1=medium, 2=hard
             if(level == 1){
-                bullets = 130;
+                bullets = 13;
                 spaceshipsPerWave = 5;
-                spaceshipsSpeed = 1; // values between 1 and 2
+                spaceshipsSpeed = 0; // values between 1 and 2
                 phases = 1;
                 bulletDamage = 25;
 
             }else if(level == 2){
                 bullets = 300;
                 spaceshipsPerWave = 5;
-                spaceshipsSpeed = 2.5;// values between 2 and 3
+                spaceshipsSpeed = 2.4;// values between 2 and 3
                 phases = 2;
                 bulletDamage = 25;
 
             }else if(level == 3){
                 bullets = 600;
-                spaceshipsPerWave = 5;
-                spaceshipsSpeed = 2.7;// values between 3 and 4
+                spaceshipsPerWave = 6;
+                spaceshipsSpeed = 3;// values between 3 and 4
                 phases = 3;
                 bulletDamage = 50;
             }
@@ -42,6 +42,10 @@ class Initializer{
         void setLevel (int difficulty) {
             level = difficulty;
             setValues(difficulty);
+        }
+
+        void setDamage(int damage){
+            bulletDamage = damage;
         }
 
         int getLevel (){

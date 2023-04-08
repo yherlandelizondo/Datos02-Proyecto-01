@@ -47,7 +47,7 @@ class SpaceshipNode{
             this -> id = identifier;
             this -> wave = waveNum;
             this -> next = NULL;
-            this -> xCoord = 590;
+            this -> xCoord = 650;
             this -> yCoord = yCoor;
             this -> health = 0;
             this -> upOrDown = direction;

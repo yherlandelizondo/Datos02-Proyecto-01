@@ -6,21 +6,23 @@ using namespace std;
 
 BulletCollector collector;
 
-//! Overloading operator delete, this funtion is used to insert bullets on BulletCollector
+/*//! Overloading operator delete, this funtion is used to insert bullets on BulletCollector
 void operator delete(void* ptr){ 
     collector.insert(ptr);
-}
+}*/
 
 class BulletList{
 
     BulletNode* head;
     int size;
     int bulletDamage;
+    int bullets;
 
     public:
         BulletList(){
             head=NULL;
             size = 0;
+            bullets = 0;
         }
 
         void insert(int ID, int damage){
@@ -37,14 +39,14 @@ class BulletList{
             while (temp != NULL){
                 if(temp -> getID() == id){
                     removeAux(temp, false);
-                    cout << "Bullet deleted\n";
+                    //cout << "Bullet deleted\n";
                     return 0;
                 }
                 else{
                     temp = temp -> getNext();
                 }
             }
-            cout<< "Node not found.\n";
+            cout<< "Node not found when hit.\n";
             return 0;
         }
 
@@ -60,7 +62,6 @@ class BulletList{
                     temp = temp->getNext();
                 }
             }
-            cout<< "Node not found.\n";
             return 0;
         }
         //!auxiliar funtion to delete bullets from the list
@@ -69,8 +70,7 @@ class BulletList{
             if(coll){
                 //!reducing the bullet damage and adding to the collector list
                 node->reduceDamage();
-                delete node;
-                collector.setDamage(bulletDamage);
+                collector.insert(node);
             }
             while(temp != NULL){
                 if(temp -> getID() == node -> getID()){
@@ -88,6 +88,20 @@ class BulletList{
             return 0;
         }
 
+        void printList(){
+            BulletNode* temp = head;
+            if(head == NULL){
+                cout << "\n" << "Empty  list\n";
+                return;
+            }
+            cout << "\n";
+            while(temp != NULL){
+                cout << temp-> getID() << " -> ";
+                temp = temp -> getNext();
+            }
+            return;
+        }
+
         BulletNode* getHead(){
             return head;
         }
@@ -100,7 +114,8 @@ class BulletList{
             return size;
         }
 
-        BulletCollector getCollector(){
-            return collector;
+        int getCollectorBullets(){
+            bullets = collector.bulletsOnCollector();
+            return bullets;
         }
 };

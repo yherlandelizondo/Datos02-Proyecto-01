@@ -33,7 +33,7 @@ float bulletY = spaceshipY;
 float timeSinceLastShoot, timeSinceLastYUpdate = 0;
 bool bulletOnScreen, usingCollector = false;
 float shootInterval = 0.1;
-int bulletSpeed = 20;
+int bulletSpeed = 6; //20 it's perfect
 int level, spaceshipsSpeed, spaceshipsPerWave, phases, enemies, ID, condition;
 int wave, aux1, enemiesOnScreen, enemieXCoord, enemieYCoord;
 int bulletID, specificWave = 0;
@@ -56,11 +56,12 @@ BulletList* bulletList = new BulletList;
 
 //!Function to update the bullet coords
 void shootBullet(){
-    if(!bulletOnScreen){
+    if(!bulletOnScreen && bullets > 0){
         bulletX = spaceshipX;
         bulletY = spaceshipY;
         bulletOnScreen = true;
-        bulletID++;
+        bullets -= 1;
+        //bulletID++; probando si puedo aumentar esto en el while y no aqui
         bulletList->insert(bulletID, start->getBulletDamage());
     }
 }
@@ -70,21 +71,21 @@ void updateBullet(){ // verificacion de collisiones
     if(bulletOnScreen){
         bulletX += bulletSpeed;
         if(bullets == 0){
-            usingCollector = true;
+            usingCollector = true; //!variable to check if we are using the collector(used to change on screen text)
             if(useCollector){
-                bullets = bulletList->getCollector().bulletsOnCollector();
-                start->setDamage(bulletList->getCollector().getDamage());
+                bullets = bulletList->getCollectorBullets();
+                start->setDamage(start->getBulletDamage()/2);
                 useCollector = false;
             }
-            
-            //cout << bulletList->getCollector().getSize() - 1058<< " balas en el collector\n";
+        //cout << bulletList->getCollectorBullets()<< " balas en el collector\n";
         }
-        if(bulletX > screenWidth && bullets > 0){
-            bulletOnScreen = false;
-            bullets -= 1;
-            if(useCollector){
+
+        if((bulletX > screenWidth) && (bullets > 0)){
+            if(useCollector){ //!check if its necessary to append bullets to the collector list
                 bulletList->noHitRemove(bulletID);
+
             }
+            bulletOnScreen = false;
         }
     }
 }
@@ -111,7 +112,7 @@ void render(){
     if(usingCollector){
         al_draw_textf(font, al_map_rgb(255, 255, 255), 0, 0, 0, " Actual wave: %.1d Bullets: %.1d UsingCollector: true", specificWave, bullets);
     }else{
-        al_draw_textf(font, al_map_rgb(255, 255, 255), 0, 0, 0, " Actual wave: %.1d Bullets: %.1d", specificWave, bullets);
+        al_draw_textf(font, al_map_rgb(255, 255, 255), 0, 0, 0, " Actual wave: %.1d Bullets: %.1d BulletsOnCollector: %.1d", specificWave, bullets, bulletList->getCollectorBullets());
     }
     
     al_draw_bitmap(spaceShipImage, spaceshipX, spaceshipY, 0);
@@ -147,12 +148,11 @@ void render(){
         }else{
             //!collition detector:
             condition = spaceList->collitionDetector(bulletX, bulletY, bulletHeight, bulletLength, spaceshipX, spaceshipY, spaceshipHeight, spaceshipLength, specificWave, start->getBulletDamage(), enemiesOnScreen);
-    
             //!Using the collition detector return to modify some enemies or finish the game
             if(condition == 8){ //!you hit an enemie with a bullet
                 bulletOnScreen = false;
-                bullets -= 1;
-                bulletList -> hitRemove(bulletID);
+                bulletList -> hitRemove(bulletID); 
+            
                 timeSinceLastYUpdate = 0;
                 spaceshipsOnSomeWave = spaceList->returnSpaceships(specificWave);
                 enemiesOnScreen = spaceshipsOnSomeWave.size;
@@ -195,9 +195,9 @@ int main()
     //!Difficulty selection
     cout << "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n";
     cout << "//////////////////////////////////////////////////////////////////////////\n";
-    cout << "Choose the difficulty of the game: \n1 -> Easy\n2 -> Medium\n3 -> Hard\n";
+    cout << "Choose the difficulty level of the game: \n1 -> Easy\n2 -> Medium\n3 -> Hard\n";
     cout << "//////////////////////////////////////////////////////////////////////////\n";
-    cout << "Insert the difficulty number: ";
+    cout << "Insert the difficulty level number: ";
     cin >> level;
 
     if(level != 1 && level != 2 && level != 3){
@@ -255,8 +255,18 @@ int main()
         //!Main loop
         while(1)
         {
-            al_wait_for_event(queue, &event);
+            if(bullets == 0 && useCollector == false){
+                cout << "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n";
+                cout << "*****************************\n";
+                cout << "        GAME OVER\n";
+                cout << " You spent all your bullets\n";  
+                cout << "*****************************\n";
+                done = true;
 
+            }
+            //cout << "\n";
+            al_wait_for_event(queue, &event);
+            
             switch(event.type)
             {
                 case ALLEGRO_EVENT_TIMER:
@@ -264,6 +274,9 @@ int main()
                     timeSinceLastYUpdate += 1.0 / 60.0;
                     timeSinceLastShoot += 1.0 / 60.0;
                     if (timeSinceLastShoot >= shootInterval){
+                        if(bulletOnScreen == false){ //provisional, solo es por probar.
+                            bulletID++;
+                        }
                         shootBullet();
                         timeSinceLastShoot = 0;
                     }

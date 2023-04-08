@@ -6,7 +6,6 @@ using namespace std;
 class BulletCollector{
     
     CollectorNode* head;
-    int size;
     int bulletNum;
     int bulletDamage;
     
@@ -14,29 +13,20 @@ class BulletCollector{
         //! constructor method
         BulletCollector(){
             head = NULL;
-            this -> size = 0;
+            this -> bulletNum = 0;
             
         }
         //! method to insert a node at the beginnig of the list
         void insert(void* ptr){
+            cout << "hola\n";
+            bulletNum++;
             CollectorNode* newCollectorNode = (CollectorNode*) malloc(sizeof(CollectorNode*)); 
             newCollectorNode->setMemPtr(ptr);
             newCollectorNode -> setNext(head);
             head = newCollectorNode;
-            size++;
         }   
         //! method used to return the number of bullets stored on collector list
         int bulletsOnCollector(){
-            CollectorNode* temp = head;
-            if(head == NULL){
-                return 0;
-            }
-
-            while(temp != NULL){
-                bulletNum++;
-                temp = temp->next;
-            }
-            cout << "bulletNum: " << bulletNum << "\n";
             return bulletNum;
         }
         void setDamage(int damage){
@@ -63,8 +53,5 @@ class BulletCollector{
         
         int getDamage(){
             return bulletDamage;
-        }
-        int getSize(){
-            return size;
         }
 };

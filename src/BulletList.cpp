@@ -6,11 +6,6 @@ using namespace std;
 
 BulletCollector collector;
 
-/*//! Overloading operator delete, this funtion is used to insert bullets on BulletCollector
-void operator delete(void* ptr){ 
-    collector.insert(ptr);
-}*/
-
 class BulletList{
 
     BulletNode* head;
@@ -46,7 +41,6 @@ class BulletList{
                     temp = temp -> getNext();
                 }
             }
-            cout<< "Node not found when hit.\n";
             return 0;
         }
 

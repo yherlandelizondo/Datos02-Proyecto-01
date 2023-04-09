@@ -1,13 +1,15 @@
+#include <allegro5/allegro5.h>
+#include <allegro5/allegro_image.h>
+#include <allegro5/allegro_font.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <iostream>
 #include <time.h>
-#include "BulletList.cpp"
-#include "Initializer.cpp"
-#include "SpaceshipList.cpp"
-#include <allegro5/allegro5.h>
-#include <allegro5/allegro_image.h>
-#include <allegro5/allegro_font.h>
+#include <fstream>
+#include "./src/BulletList.cpp"
+#include "./src/Initializer.cpp"
+#include "./src/SpaceshipList.cpp"
+#include "./data/rapidxml.hpp"
 
 using namespace std;
 
@@ -66,6 +68,28 @@ void shootBullet(){
     }
 }
 
+int strategyLoader(int strategy){
+    std::ifstream archivo("./data/sprinter.xml");
+    if (!archivo.is_open()) {
+        std::cout << "Error: could not open the XML file." << endl;
+        return 1;
+    }
+
+    std::string contenido((std::istreambuf_iterator<char>(archivo)), std::istreambuf_iterator<char>());
+    archivo.close();
+
+    rapidxml::xml_document<> doc;
+    doc.parse<0>(&contenido[0]);
+
+    // Obtener el primer libro
+    rapidxml::xml_node<>* power = doc.first_node("sprinter_strategy")->first_node("power");
+
+    // Obtener el título del primer libro
+    rapidxml::xml_node<>* increment = power->first_node("YAxisIncrement");
+    const char* incrementValue = increment->value();
+    cout << "Increment: " << incrementValue << endl;
+    return 0;
+}
 //!Function to update the bullet position and add bullet to collector
 void updateBullet(){ // verificacion de collisiones
     if(bulletOnScreen){
@@ -214,8 +238,8 @@ int main()
         queue = al_create_event_queue();
         disp = al_create_display(screenWidth, screenHeight);
         font = al_create_builtin_font();
-        spaceShipImage = al_load_bitmap("sprite_spaceship.png");
-        bulletImage = al_load_bitmap("sprite_bullet.png");
+        spaceShipImage = al_load_bitmap("./sprites/sprite_spaceship.png");
+        bulletImage = al_load_bitmap("./sprites/sprite_bullet.png");
         phases = start -> getPhases();
         bullets = start -> getBullets();
         spaceshipsSpeed = start -> getSpaceshipsSpeed();
@@ -306,6 +330,18 @@ int main()
                     } 
                     if(key[ALLEGRO_KEY_ESCAPE]){
                         done = true;
+                    }
+                    if(key[ALLEGRO_KEY_1]){
+                        strategyLoader(1);
+                    }
+                    if(key[ALLEGRO_KEY_2]){
+                        strategyLoader(2);
+                    }
+                    if(key[ALLEGRO_KEY_3]){
+                        strategyLoader(3);
+                    }
+                    if(key[ALLEGRO_KEY_4]){
+                        strategyLoader(4);
                     }
                         
                     for(int i = 0; i < ALLEGRO_KEY_MAX; i++)

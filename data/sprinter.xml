@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sprinter_strategy>
+  <power id="1">
+    <YAxisIncrement>2</YAxisIncrement>
+  </power>
+</sprinter_strategy>

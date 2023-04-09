@@ -18,7 +18,6 @@ class BulletCollector{
         }
         //! method to insert a node at the beginnig of the list
         void insert(void* ptr){
-            cout << "hola\n";
             bulletNum++;
             CollectorNode* newCollectorNode = (CollectorNode*) malloc(sizeof(CollectorNode*)); 
             newCollectorNode->setMemPtr(ptr);

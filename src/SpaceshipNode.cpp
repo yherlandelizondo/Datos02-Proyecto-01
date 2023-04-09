@@ -86,15 +86,15 @@ class SpaceshipNode{
         }
         ALLEGRO_BITMAP* applySprite(){
             if(selectedSprite == 0){
-                enemySprite = al_load_bitmap("sprite_blueEnemy.png");
+                enemySprite = al_load_bitmap("./sprites/sprite_blueEnemy.png");
             }else if(selectedSprite == 1){
-                enemySprite = al_load_bitmap("sprite_greenEnemy.png");
+                enemySprite = al_load_bitmap("./sprites/sprite_greenEnemy.png");
             }else if(selectedSprite == 2){
-                enemySprite = al_load_bitmap("sprite_redEnemy.png");
+                enemySprite = al_load_bitmap("./sprites/sprite_redEnemy.png");
             }else if(selectedSprite == 3){
-                enemySprite = al_load_bitmap("sprite_purpleEnemy.png");
+                enemySprite = al_load_bitmap("./sprites/sprite_purpleEnemy.png");
             }else if(selectedSprite == 4){
-                enemySprite = al_load_bitmap("sprite_whiteEnemy.png");
+                enemySprite = al_load_bitmap("./sprites/sprite_whiteEnemy.png");
             }
             return enemySprite;
         }

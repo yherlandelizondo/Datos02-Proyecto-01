@@ -12,4 +12,4 @@
 ./game<t>
 
  
-# Developed by: Yherland Elizondo, Gabriela Quesada
+### Developed by: Yherland Elizondo, Gabriela Quesada

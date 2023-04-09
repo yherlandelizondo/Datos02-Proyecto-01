@@ -10,6 +10,8 @@
 #include "./src/Initializer.cpp"
 #include "./src/SpaceshipList.cpp"
 #include "./data/rapidxml.hpp"
+#include <allegro5/allegro_audio.h>
+#include <allegro5/allegro_acodec.h>
 
 using namespace std;
 
@@ -20,7 +22,6 @@ struct spaceArray spaceshipsOnSomeWave;
 Initializer* start = new Initializer;
 BulletList* bulletList = new BulletList;
 
-bool done = false;
 ALLEGRO_EVENT event;
 
 float spaceshipY = 215;
@@ -38,16 +39,18 @@ int spaceshipLength = 80;
 
 float bulletX = spaceshipX;
 float bulletY = spaceshipY;
-float timeSinceLastShoot, timeSinceLastYUpdate, timeSinceLastPower = 0;
-bool bulletOnScreen, usingCollector = false;
+float timeSinceLastShoot, timeSinceLastYUpdate, timeSinceLastPower, timeSinceLastCowUpdate = 0;
+bool bulletOnScreen, usingCollector, atomicCowOnScreen = false;
 float shootInterval = 0.1;
+float cowUpdateInterval = 2;
 float powerInterval = 1; //!Variable used to limit the powers
 int bulletSpeed = 12;
 int level, spaceshipsSpeed, spaceshipsPerWave, phases, enemies, ID, condition, bulletDamage;
-int wave, aux1, enemiesOnScreen, enemieXCoord, enemieYCoord;
-int bulletID, specificWave = 0;
+int wave, aux1, enemiesOnScreen, enemieXCoord, enemieYCoord, auxiliarDamage;
+int bulletID, specificWave, specificWaveForAtomic = 0;
 int bullets = 1;
 int useCollector = true;
+int bulletSoundID = 0;
 
 ALLEGRO_TIMER *timer = NULL;
 ALLEGRO_BITMAP *spaceShipImage = NULL;
@@ -56,13 +59,21 @@ ALLEGRO_BITMAP *enemieSprite = NULL;
 ALLEGRO_EVENT_QUEUE *queue = NULL;
 ALLEGRO_DISPLAY* disp = NULL;
 ALLEGRO_FONT* font = NULL;
-
-
+ALLEGRO_BITMAP *atomicCow = NULL;
+ALLEGRO_BITMAP *auxiliarImage = NULL;
+ALLEGRO_SAMPLE *explosion = NULL;
+ALLEGRO_SAMPLE *shot = NULL;
+ALLEGRO_SAMPLE *moo = NULL;
 
 
 //!Function to update the bullet coords
 void shootBullet(){
     if(!bulletOnScreen && bullets > 0){
+        if(bulletSoundID == 1){
+            al_play_sample(moo, 0.2, 0.0, 1.0, ALLEGRO_PLAYMODE_ONCE, NULL);
+        }else{
+            al_play_sample(shot, 0.3, 0.0, 1.0, ALLEGRO_PLAYMODE_ONCE, NULL);
+        }
         bulletX = spaceshipX;
         bulletY = spaceshipY;
         bulletOnScreen = true;
@@ -116,32 +127,58 @@ int strategyLoader(int strategy){
             cout << "Error: could not open the XML file." << endl;
             return 1;
         }
-        cout << "control1" << endl;
         //!obtaining the xml content
         string content((istreambuf_iterator<char>(file)), istreambuf_iterator<char>());
         file.close();
         rapidxml::xml_document<> doc;
         doc.parse<0>(&content[0]);
-        cout << "control2" << endl;
+
         //!obtaining the damageIncrement value
         rapidxml::xml_node<>* damage = doc.first_node("cowboy_strategy")->first_node("damageIncrement");
-        cout << "control2.1" << endl;
-        //int damageIncrement = stoi(damage->value());
-        cout << "control3" << endl;
+        int damageIncrement = stoi(damage->value());
+
         //!Increasing the bullet damage
-        //bulletDamage += damageIncrement;
-        cout << "control4" << endl;
+        auxiliarDamage = bulletDamage;
+        bulletDamage += damageIncrement;
+
         //!obtaining the sprite
         rapidxml::xml_node<>* spritePhath = doc.first_node("cowboy_strategy")->first_node("sprite");
-        cout << "control5" << endl;
         const char* sprite = spritePhath->first_attribute("path")->value();
         
-
         //!Loading the sprite
         bulletImage = al_load_bitmap(sprite);
-        cout << "control6" << endl;
+        auxiliarImage = bulletImage;
+        bulletSoundID = 1;
+
     }else{
-        //
+        ifstream file("./data/atomicCowboy.xml");
+        if (!file.is_open()) {
+            cout << "Error: could not open the XML file." << endl;
+            return 1;
+        }
+        //!obtaining the xml content
+        string content((istreambuf_iterator<char>(file)), istreambuf_iterator<char>());
+        file.close();
+        rapidxml::xml_document<> doc;
+        doc.parse<0>(&content[0]);
+
+        //!obtaining the damageIncrement value
+        rapidxml::xml_node<>* atomicDamage = doc.first_node("atomicCowboy_strategy")->first_node("damageIncrement");
+        int atomicIncrement = stoi(atomicDamage->value());
+
+        //!Increasing the bullet damage
+        auxiliarDamage = bulletDamage;
+        bulletDamage += atomicIncrement;
+
+        //!obtaining the sprite
+        rapidxml::xml_node<>* atomicPath = doc.first_node("atomicCowboy_strategy")->first_node("sprite");
+        const char* atomicSprite = atomicPath->first_attribute("path")->value();
+        
+        //!Loading the sprite
+        bulletImage = al_load_bitmap(atomicSprite);
+        atomicCowOnScreen = true;
+
+        al_play_sample(moo, 0.2, 0.0, 1.0, ALLEGRO_PLAYMODE_ONCE, NULL);
     }
     
     return 0;
@@ -157,13 +194,16 @@ void updateBullet(){ // verificacion de collisiones
                 start->setDamage(bulletDamage/2);
                 useCollector = false;
             }
-        //cout << bulletList->getCollectorBullets()<< " balas en el collector\n";
         }
 
         if((bulletX > screenWidth) && (bullets > 0)){
+            if(atomicCowOnScreen){
+                atomicCowOnScreen = false;
+                bulletImage = auxiliarImage;
+                bulletDamage = auxiliarDamage;
+            }
             if(useCollector){ //!check if its necessary to append bullets to the collector list
                 bulletList->noHitRemove(bulletID);
-
             }
             bulletOnScreen = false;
         }
@@ -206,7 +246,8 @@ void render(){
         cout << "           YOU WON\n";
         cout << "       CONGRATULATIONS!\n";  
         cout << "*****************************\n";
-        done = true;
+        al_rest(0.2);
+        exit(1);
     }
     else{
         if (enemiesOnScreen == 0){
@@ -230,7 +271,13 @@ void render(){
             condition = spaceList->collitionDetector(bulletX, bulletY, bulletHeight, bulletLength, spaceshipX, spaceshipY, spaceshipHeight, spaceshipLength, specificWave, bulletDamage, enemiesOnScreen);
             //!Using the collition detector return to modify some enemies or finish the game
             if(condition == 8){ //!you hit an enemie with a bullet
+                al_play_sample(explosion, 0.15, 0.0, 1.0, ALLEGRO_PLAYMODE_ONCE, NULL);
                 bulletOnScreen = false;
+                if(atomicCowOnScreen){
+                    atomicCowOnScreen = false;
+                    bulletImage = auxiliarImage;
+                    bulletDamage = auxiliarDamage;
+                }
                 bulletList -> hitRemove(bulletID); 
             
                 timeSinceLastYUpdate = 0;
@@ -251,7 +298,8 @@ void render(){
                 cout << "        GAME OVER\n";
                 cout << " An enemy crossed the limit\n";  
                 cout << "*****************************\n";
-                done = true;  
+                al_rest(0.2);
+                exit(1); 
 
             }else if(condition == 9){
                 cout << "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n";
@@ -259,7 +307,8 @@ void render(){
                 cout << "        GAME OVER\n";
                 cout << "An enemy hit your spaceship\n";  
                 cout << "*****************************\n";
-                done = true; 
+                al_rest(0.2);
+                exit(1);
 
             }else{
                 updateEnemies(spaceshipsOnSomeWave);
@@ -290,12 +339,19 @@ int main()
         al_init();
         al_install_keyboard();
         al_init_image_addon();
+        al_install_audio();
+        al_init_acodec_addon();
+        al_reserve_samples(10);
         timer = al_create_timer(1.0 / 60.0);
         queue = al_create_event_queue();
         disp = al_create_display(screenWidth, screenHeight);
         font = al_create_builtin_font();
         spaceShipImage = al_load_bitmap("./sprites/sprite_spaceship.png");
         bulletImage = al_load_bitmap("./sprites/sprite_bullet.png");
+        explosion = al_load_sample("aud/explosion.wav");
+        shot = al_load_sample("aud/shot.wav");
+        moo = al_load_sample("aud/moo.wav");
+        auxiliarImage = bulletImage;
         phases = start -> getPhases();
         bullets = start -> getBullets();
         bulletDamage = start->getBulletDamage();
@@ -342,7 +398,8 @@ int main()
                 cout << "        GAME OVER\n";
                 cout << " You spent all your bullets\n";  
                 cout << "*****************************\n";
-                done = true;
+                al_rest(0.2);
+                exit(1);
 
             }
             //cout << "\n";
@@ -352,6 +409,7 @@ int main()
             {
                 case ALLEGRO_EVENT_TIMER:
                     updateBullet();
+                    timeSinceLastCowUpdate += 1.0 / 60.0;
                     timeSinceLastYUpdate += 1.0 / 60.0;
                     timeSinceLastShoot += 1.0 / 60.0;
                     timeSinceLastPower += 1.0 / 60.0;
@@ -384,7 +442,7 @@ int main()
                         }
                     } 
                     if(key[ALLEGRO_KEY_ESCAPE]){
-                        done = true;
+                        exit(1);
                     }
                     if(key[ALLEGRO_KEY_1]){
                         if(timeSinceLastPower >= powerInterval){
@@ -425,22 +483,22 @@ int main()
                     break;
 
                 case ALLEGRO_EVENT_DISPLAY_CLOSE:
-                    done = true;
-                    break;
+                    exit(1);
             }
-
-            if(done)
-                break;
         }
 
         al_destroy_font(font);
         al_destroy_bitmap(spaceShipImage);
         al_destroy_bitmap(bulletImage);
         al_destroy_bitmap(enemieSprite);
+        al_destroy_bitmap(auxiliarImage);
+        al_destroy_bitmap(atomicCow);
         al_destroy_display(disp);
         al_destroy_timer(timer);
         al_destroy_event_queue(queue);
-        
+        al_destroy_sample(explosion); 
+        al_destroy_sample(shot); 
+        al_destroy_sample(moo); 
         return 0;
         }
 };

@@ -25,11 +25,6 @@ class SpaceshipNode{
         ALLEGRO_BITMAP *enemySprite = NULL;
         ALLEGRO_BITMAP *sprite;
 
-
-        /*void randomColor(){
-            randomCol = rand()%4;
-        }*/
-
         bool randomBool(){
             random = rand()%2;
             if(random){

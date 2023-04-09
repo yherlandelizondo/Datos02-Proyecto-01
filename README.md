@@ -4,7 +4,7 @@
 
 ## Instalation
 
-<t>-> Install Allegro5 library (PPA Installation recomended)</t>
+<t>-> Install Allegro5 library (PPA Installation recommended)</t>
 
 <t>-> Compile "game.cpp" with the following command:</t>
 

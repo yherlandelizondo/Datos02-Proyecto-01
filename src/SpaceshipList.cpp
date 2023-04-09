@@ -30,6 +30,14 @@ class SpaceshipList{
             head = newNode;
         }
 
+        void reduceSpeed(float decrement){
+            SpaceshipNode* temp = head;
+            while (temp != NULL){
+                temp->setSpeed(temp->getSpeed() - (decrement));
+                temp = temp -> getNext();
+            }
+        }
+
         SpaceshipNode* removeAux(SpaceshipNode* node){
             SpaceshipNode* temp = head;
             delete node;
@@ -67,7 +75,7 @@ class SpaceshipList{
         int prinList(){
             SpaceshipNode* temp1 = head;
             if(head == NULL){
-                cout << "lista vacía" << "\n";
+                cout << "empty list" << "\n";
             }
             else{
                 while (temp1 != NULL){
@@ -113,7 +121,6 @@ class SpaceshipList{
             //si colisciona con la nave o si la pasó el limite 7, si le da la bala 8 y si no pasa nada 9
             SpaceshipNode* temp4 = head;
             struct spaceArray arrayStruct;
-            int l = 0;
             while (temp4 != NULL){
                 if(temp4 -> getWave() == wave){    
                     //!check if the bullet touch some enemie.
@@ -142,7 +149,6 @@ class SpaceshipList{
                     }
                 }
                 temp4 = temp4 -> getNext();
-                l++;
             }
             auxiliarEvent = event;
             event = 0;

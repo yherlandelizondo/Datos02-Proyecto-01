@@ -14,13 +14,13 @@ class SpaceshipNode{
         int health;
         int random;
         int randomCol;
-        int xCoord;
+        float xCoord;
         int yCoord;
         SpaceshipNode* next;
         bool yMovement;
         int selectedSprite;
         int wave;
-        int enemieSpeed;
+        float enemieSpeed;
         int upOrDown;
         ALLEGRO_BITMAP *enemySprite = NULL;
         ALLEGRO_BITMAP *sprite;
@@ -134,6 +134,14 @@ class SpaceshipNode{
         }
         int getHealth(){
             return health;
+        }
+        void setSpeed(float speed){
+            if(speed > 0){
+                enemieSpeed = speed;
+            }
+        }
+        int getSpeed(){
+            return enemieSpeed;
         }
 
 };

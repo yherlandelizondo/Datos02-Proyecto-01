@@ -14,6 +14,12 @@
 using namespace std;
 
 //! Game variables
+
+SpaceshipList* spaceList = new SpaceshipList;
+struct spaceArray spaceshipsOnSomeWave;
+Initializer* start = new Initializer;
+BulletList* bulletList = new BulletList;
+
 bool done = false;
 ALLEGRO_EVENT event;
 
@@ -32,16 +38,16 @@ int spaceshipLength = 80;
 
 float bulletX = spaceshipX;
 float bulletY = spaceshipY;
-float timeSinceLastShoot, timeSinceLastYUpdate = 0;
+float timeSinceLastShoot, timeSinceLastYUpdate, timeSinceLastPower = 0;
 bool bulletOnScreen, usingCollector = false;
 float shootInterval = 0.1;
-int bulletSpeed = 6; //20 it's perfect
-int level, spaceshipsSpeed, spaceshipsPerWave, phases, enemies, ID, condition;
+float powerInterval = 1; //!Variable used to limit the powers
+int bulletSpeed = 12;
+int level, spaceshipsSpeed, spaceshipsPerWave, phases, enemies, ID, condition, bulletDamage;
 int wave, aux1, enemiesOnScreen, enemieXCoord, enemieYCoord;
 int bulletID, specificWave = 0;
 int bullets = 1;
 int useCollector = true;
-
 
 ALLEGRO_TIMER *timer = NULL;
 ALLEGRO_BITMAP *spaceShipImage = NULL;
@@ -51,10 +57,8 @@ ALLEGRO_EVENT_QUEUE *queue = NULL;
 ALLEGRO_DISPLAY* disp = NULL;
 ALLEGRO_FONT* font = NULL;
 
-SpaceshipList* spaceList = new SpaceshipList;
-struct spaceArray spaceshipsOnSomeWave;
-Initializer* start = new Initializer;
-BulletList* bulletList = new BulletList;
+
+
 
 //!Function to update the bullet coords
 void shootBullet(){
@@ -63,31 +67,83 @@ void shootBullet(){
         bulletY = spaceshipY;
         bulletOnScreen = true;
         bullets -= 1;
-        //bulletID++; probando si puedo aumentar esto en el while y no aqui
-        bulletList->insert(bulletID, start->getBulletDamage());
+        bulletList->insert(bulletID, bulletDamage);
     }
 }
 
 int strategyLoader(int strategy){
-    std::ifstream archivo("./data/sprinter.xml");
-    if (!archivo.is_open()) {
-        std::cout << "Error: could not open the XML file." << endl;
-        return 1;
+    if(strategy == 1){ //sprinter strategy
+        ifstream file("./data/sprinter.xml");
+        if (!file.is_open()) {
+            cout << "Error: could not open the XML file." << endl;
+            return 1;
+        }
+        //!obtaining the xml content
+        string content((istreambuf_iterator<char>(file)), istreambuf_iterator<char>());
+        file.close();
+        rapidxml::xml_document<> doc;
+        doc.parse<0>(&content[0]);
+
+        //!obtaining the increment value
+        rapidxml::xml_node<>* powerIncrement = doc.first_node("sprinter_strategy")->first_node("YAxisIncrement");
+        int incrementValue = stoi(powerIncrement->value());
+
+        //!Increasing the spaceship speed
+        movementDistance += incrementValue;
+
+    }else if(strategy == 2){ //decelerator strategy
+        ifstream file("./data/decelerator.xml");
+        if (!file.is_open()) {
+            cout << "Error: could not open the XML file." << endl;
+            return 1;
+        }
+        //!obtaining the xml content
+        string content((istreambuf_iterator<char>(file)), istreambuf_iterator<char>());
+        file.close();
+        rapidxml::xml_document<> doc;
+        doc.parse<0>(&content[0]);
+
+        //!obtaining the reduction value
+        rapidxml::xml_node<>* powerReduction = doc.first_node("decelerator_strategy")->first_node("xReduction");
+        float reductionValue = stof(powerReduction->value());
+
+        //!Decreasing the spaceship speed
+        spaceList->reduceSpeed(reductionValue);
+
+    }else if(strategy == 3){ //cowboy stategy
+        ifstream file("./data/cowboy.xml");
+        if (!file.is_open()) {
+            cout << "Error: could not open the XML file." << endl;
+            return 1;
+        }
+        cout << "control1" << endl;
+        //!obtaining the xml content
+        string content((istreambuf_iterator<char>(file)), istreambuf_iterator<char>());
+        file.close();
+        rapidxml::xml_document<> doc;
+        doc.parse<0>(&content[0]);
+        cout << "control2" << endl;
+        //!obtaining the damageIncrement value
+        rapidxml::xml_node<>* damage = doc.first_node("cowboy_strategy")->first_node("damageIncrement");
+        cout << "control2.1" << endl;
+        //int damageIncrement = stoi(damage->value());
+        cout << "control3" << endl;
+        //!Increasing the bullet damage
+        //bulletDamage += damageIncrement;
+        cout << "control4" << endl;
+        //!obtaining the sprite
+        rapidxml::xml_node<>* spritePhath = doc.first_node("cowboy_strategy")->first_node("sprite");
+        cout << "control5" << endl;
+        const char* sprite = spritePhath->first_attribute("path")->value();
+        
+
+        //!Loading the sprite
+        bulletImage = al_load_bitmap(sprite);
+        cout << "control6" << endl;
+    }else{
+        //
     }
-
-    std::string contenido((std::istreambuf_iterator<char>(archivo)), std::istreambuf_iterator<char>());
-    archivo.close();
-
-    rapidxml::xml_document<> doc;
-    doc.parse<0>(&contenido[0]);
-
-    // Obtener el primer libro
-    rapidxml::xml_node<>* power = doc.first_node("sprinter_strategy")->first_node("power");
-
-    // Obtener el título del primer libro
-    rapidxml::xml_node<>* increment = power->first_node("YAxisIncrement");
-    const char* incrementValue = increment->value();
-    cout << "Increment: " << incrementValue << endl;
+    
     return 0;
 }
 //!Function to update the bullet position and add bullet to collector
@@ -98,7 +154,7 @@ void updateBullet(){ // verificacion de collisiones
             usingCollector = true; //!variable to check if we are using the collector(used to change on screen text)
             if(useCollector){
                 bullets = bulletList->getCollectorBullets();
-                start->setDamage(start->getBulletDamage()/2);
+                start->setDamage(bulletDamage/2);
                 useCollector = false;
             }
         //cout << bulletList->getCollectorBullets()<< " balas en el collector\n";
@@ -114,7 +170,7 @@ void updateBullet(){ // verificacion de collisiones
     }
 }
 
-void updateEnemies(struct spaceArray enemiesArray){ //recordar restar el valor de size en el stuct
+void updateEnemies(struct spaceArray enemiesArray){ 
     for(int j = 0; j < enemiesArray.size; j++){
         if(enemiesArray.spaceshipsOnWave[j]->getYMovement()){
             enemiesArray.spaceshipsOnWave[j]->modifyXCoord();
@@ -171,7 +227,7 @@ void render(){
             
         }else{
             //!collition detector:
-            condition = spaceList->collitionDetector(bulletX, bulletY, bulletHeight, bulletLength, spaceshipX, spaceshipY, spaceshipHeight, spaceshipLength, specificWave, start->getBulletDamage(), enemiesOnScreen);
+            condition = spaceList->collitionDetector(bulletX, bulletY, bulletHeight, bulletLength, spaceshipX, spaceshipY, spaceshipHeight, spaceshipLength, specificWave, bulletDamage, enemiesOnScreen);
             //!Using the collition detector return to modify some enemies or finish the game
             if(condition == 8){ //!you hit an enemie with a bullet
                 bulletOnScreen = false;
@@ -242,6 +298,7 @@ int main()
         bulletImage = al_load_bitmap("./sprites/sprite_bullet.png");
         phases = start -> getPhases();
         bullets = start -> getBullets();
+        bulletDamage = start->getBulletDamage();
         spaceshipsSpeed = start -> getSpaceshipsSpeed();
         spaceshipsPerWave = start -> getSpaceshipsPerWave();
         enemies = phases * 5 * spaceshipsPerWave;
@@ -252,7 +309,7 @@ int main()
         while(aux1 >= spaceshipsPerWave){
             wave++;
             for(int i = 0; i != spaceshipsPerWave; i++){
-                spaceList->insert(ID, wave, rand()%430, start->getSpaceshipsSpeed(), rand()%4, rand()%2);
+                spaceList->insert(ID, wave, rand()%430, spaceshipsSpeed, rand()%4, rand()%2);
                 ID++;
             }
             aux1 -= spaceshipsPerWave;
@@ -297,6 +354,8 @@ int main()
                     updateBullet();
                     timeSinceLastYUpdate += 1.0 / 60.0;
                     timeSinceLastShoot += 1.0 / 60.0;
+                    timeSinceLastPower += 1.0 / 60.0;
+                    
                     if (timeSinceLastShoot >= shootInterval){
                         if(bulletOnScreen == false){ //provisional, solo es por probar.
                             bulletID++;
@@ -305,16 +364,12 @@ int main()
                         timeSinceLastShoot = 0;
                     }
                     if(key[ALLEGRO_KEY_W]){
-                        if(spaceshipY == 0){
-                            spaceshipY = 0;
-                        }else{
+                        if(spaceshipY - movementDistance >= 0){
                             spaceshipY -= movementDistance;
                         }
                     }  
                     if(key[ALLEGRO_KEY_S]){
-                        if(spaceshipY == 435){
-                            spaceshipY = 435;
-                        }else{
+                        if(spaceshipY - movementDistance <= 435){
                             spaceshipY += movementDistance;
                         }
                     }   
@@ -332,16 +387,28 @@ int main()
                         done = true;
                     }
                     if(key[ALLEGRO_KEY_1]){
-                        strategyLoader(1);
+                        if(timeSinceLastPower >= powerInterval){
+                            strategyLoader(1);
+                            timeSinceLastPower = 0;
+                        }
                     }
                     if(key[ALLEGRO_KEY_2]){
-                        strategyLoader(2);
+                        if(timeSinceLastPower >= powerInterval){
+                            strategyLoader(2);
+                            timeSinceLastPower = 0;
+                        }
                     }
                     if(key[ALLEGRO_KEY_3]){
-                        strategyLoader(3);
+                        if(timeSinceLastPower >= powerInterval){
+                            strategyLoader(3);
+                            timeSinceLastPower = 0;
+                        }
                     }
                     if(key[ALLEGRO_KEY_4]){
-                        strategyLoader(4);
+                        if(timeSinceLastPower >= powerInterval){
+                            strategyLoader(4);
+                            timeSinceLastPower = 0;
+                        }
                     }
                         
                     for(int i = 0; i < ALLEGRO_KEY_MAX; i++)

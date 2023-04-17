@@ -51,6 +51,7 @@ int bulletID, specificWave, specificWaveForAtomic = 0;
 int bullets = 1;
 int useCollector = true;
 int bulletSoundID = 0;
+int atomicCowUsed = false;
 
 ALLEGRO_TIMER *timer = NULL;
 ALLEGRO_BITMAP *spaceShipImage = NULL;
@@ -81,7 +82,6 @@ void shootBullet(){
         bulletList->insert(bulletID, bulletDamage);
     }
 }
-
 int strategyLoader(int strategy){
     if(strategy == 1){ //sprinter strategy
         ifstream file("./data/sprinter.xml");
@@ -151,34 +151,37 @@ int strategyLoader(int strategy){
         bulletSoundID = 1;
 
     }else{
-        ifstream file("./data/atomicCowboy.xml");
-        if (!file.is_open()) {
-            cout << "Error: could not open the XML file." << endl;
-            return 1;
-        }
-        //!obtaining the xml content
-        string content((istreambuf_iterator<char>(file)), istreambuf_iterator<char>());
-        file.close();
-        rapidxml::xml_document<> doc;
-        doc.parse<0>(&content[0]);
+        if(!atomicCowUsed){
+            ifstream file("./data/atomicCowboy.xml");
+            if (!file.is_open()) {
+                cout << "Error: could not open the XML file." << endl;
+                return 1;
+            }
+            //!obtaining the xml content
+            string content((istreambuf_iterator<char>(file)), istreambuf_iterator<char>());
+            file.close();
+            rapidxml::xml_document<> doc;
+            doc.parse<0>(&content[0]);
 
-        //!obtaining the damageIncrement value
-        rapidxml::xml_node<>* atomicDamage = doc.first_node("atomicCowboy_strategy")->first_node("damageIncrement");
-        int atomicIncrement = stoi(atomicDamage->value());
+            //!obtaining the damageIncrement value
+            rapidxml::xml_node<>* atomicDamage = doc.first_node("atomicCowboy_strategy")->first_node("damageIncrement");
+            int atomicIncrement = stoi(atomicDamage->value());
 
-        //!Increasing the bullet damage
-        auxiliarDamage = bulletDamage;
-        bulletDamage += atomicIncrement;
+            //!Increasing the bullet damage
+            auxiliarDamage = bulletDamage;
+            bulletDamage += atomicIncrement;
 
-        //!obtaining the sprite
-        rapidxml::xml_node<>* atomicPath = doc.first_node("atomicCowboy_strategy")->first_node("sprite");
-        const char* atomicSprite = atomicPath->first_attribute("path")->value();
-        
-        //!Loading the sprite
-        bulletImage = al_load_bitmap(atomicSprite);
-        atomicCowOnScreen = true;
+            //!obtaining the sprite
+            rapidxml::xml_node<>* atomicPath = doc.first_node("atomicCowboy_strategy")->first_node("sprite");
+            const char* atomicSprite = atomicPath->first_attribute("path")->value();
+            
+            //!Loading the sprite
+            bulletImage = al_load_bitmap(atomicSprite);
+            atomicCowOnScreen = true;
 
-        al_play_sample(moo, 0.2, 0.0, 1.0, ALLEGRO_PLAYMODE_ONCE, NULL);
+            al_play_sample(moo, 0.2, 0.0, 1.0, ALLEGRO_PLAYMODE_ONCE, NULL);
+            }
+            atomicCowUsed = true;
     }
     
     return 0;
@@ -444,25 +447,25 @@ int main()
                     if(key[ALLEGRO_KEY_ESCAPE]){
                         exit(1);
                     }
-                    if(key[ALLEGRO_KEY_1]){
+                    if(key[ALLEGRO_KEY_J]){
                         if(timeSinceLastPower >= powerInterval){
                             strategyLoader(1);
                             timeSinceLastPower = 0;
                         }
                     }
-                    if(key[ALLEGRO_KEY_2]){
+                    if(key[ALLEGRO_KEY_K]){
                         if(timeSinceLastPower >= powerInterval){
                             strategyLoader(2);
                             timeSinceLastPower = 0;
                         }
                     }
-                    if(key[ALLEGRO_KEY_3]){
+                    if(key[ALLEGRO_KEY_L]){
                         if(timeSinceLastPower >= powerInterval){
                             strategyLoader(3);
                             timeSinceLastPower = 0;
                         }
                     }
-                    if(key[ALLEGRO_KEY_4]){
+                    if(key[ALLEGRO_KEY_SEMICOLON]){
                         if(timeSinceLastPower >= powerInterval){
                             strategyLoader(4);
                             timeSinceLastPower = 0;

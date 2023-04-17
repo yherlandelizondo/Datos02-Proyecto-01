@@ -48,7 +48,7 @@ class Initializer{
             bulletDamage = damage;
         }
 
-        int getLevel (){
+        int getLevel(){
             return level;
         }
 

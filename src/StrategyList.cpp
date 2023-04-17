@@ -14,6 +14,7 @@ class StrategyList{
         string cowboyPath = "./data/cowboy.xml";
         string atomicCowboyPath = "./data/atomicCowboy.xml";
         bool status = false;
+        int lastStrategyUsed = 5; 
 
         int getIdToModify(){
             return rand()%2;
@@ -30,19 +31,30 @@ class StrategyList{
             for(int i = 0; i < 2; i++){
 
                 int randomID = rand()%4;
-
-                if(randomID == 0){
-                    cout << "entro 1\n";
-                    insert(i,randomID, sprinterPath);
-                }else if(randomID == 1){
-                    cout << "entro 2\n";
-                    insert(i, randomID, deceleratorPath);
-                }else if(randomID = 2){
-                    cout << "entro 3\n";
-                    insert(i, randomID, cowboyPath);
+                if (randomID == lastStrategyUsed){
+                    randomID = rand()%4;
+                    i--;
                 }else{
-                    cout << "entro 4\n";
-                    insert(i, randomID, atomicCowboyPath);
+                    if(randomID == 0){
+                        cout << "entro 1\n";
+                        insert(i,randomID, sprinterPath);
+                        lastStrategyUsed = randomID;
+
+                    }else if(randomID == 1){
+                        cout << "entro 2\n";
+                        insert(i, randomID, deceleratorPath);
+                        lastStrategyUsed = randomID;
+
+                    }else if(randomID == 2){
+                        cout << "entro 3\n";
+                        insert(i, randomID, cowboyPath);
+                        lastStrategyUsed = randomID;
+
+                    }else if(randomID == 3){
+                        cout << "entro 4\n";
+                        insert(i, randomID, atomicCowboyPath);
+                        lastStrategyUsed = randomID;
+                    } 
                 } 
             }
         }
@@ -52,12 +64,14 @@ class StrategyList{
             newNode -> setNext(head);
             head = newNode;
         }  
+
         //! method used to return the head of the list
         StrategyNode* getHead(){
             return head;
         }
         //!function to check if some strategy it's loaded on memory
         bool checkStrategyStatus(int ID){
+            status = false;
             StrategyNode* temp = head;
 
             while (temp != NULL){ 
@@ -69,8 +83,51 @@ class StrategyList{
             }
             return status;
         }
+        //!function used to return the path of an specific strategy
+        string getStrategyPath(int ID){
+            StrategyNode* temp = head;
 
-        void loadMemory(int ID){
+            while (temp != NULL){ 
+                if(temp->getStrategyID() == ID){
+                    return temp -> getPath();
+                }  
+                temp = temp -> getNext();
+            }
+            return temp->getPath();
+        }
+
+        void removeFromMemory(int ID){
+            StrategyNode* temp = head;
+            int randomID = rand()%4;
+
+            while (temp != NULL){ 
+                if(randomID != ID){
+                    if(temp -> getStrategyID() == ID){
+                        if(randomID == 0){
+                            temp -> setStrategyID(randomID);
+                            temp -> setPath(sprinterPath);
+
+                        }else if(randomID == 1){
+                            temp -> setStrategyID(randomID);
+                            temp -> setPath(deceleratorPath);
+                            
+                        }else if(randomID == 2){
+                            temp -> setStrategyID(randomID);
+                            temp -> setPath(cowboyPath);
+
+                        }else if(randomID == 3){
+                            temp -> setStrategyID(randomID);
+                            temp -> setPath(atomicCowboyPath);
+                        }
+                    }  
+                    temp = temp -> getNext();
+                }else{
+                    randomID = rand()%4;
+                }
+            }
+        }
+
+        void loadOnMemory(int ID){
             StrategyNode* temp = head;
 
             while (temp != NULL){ 

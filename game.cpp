@@ -9,6 +9,7 @@
 #include "./src/BulletList.cpp"
 #include "./src/Initializer.cpp"
 #include "./src/SpaceshipList.cpp"
+#include "./src/StrategyList.cpp"
 #include "./data/rapidxml.hpp"
 #include <allegro5/allegro_audio.h>
 #include <allegro5/allegro_acodec.h>
@@ -21,6 +22,7 @@ SpaceshipList* spaceList = new SpaceshipList;
 struct spaceArray spaceshipsOnSomeWave;
 Initializer* start = new Initializer;
 BulletList* bulletList = new BulletList;
+StrategyList* strategyList = new StrategyList;
 
 ALLEGRO_EVENT event;
 
@@ -53,6 +55,11 @@ int useCollector = true;
 int bulletSoundID = 0;
 int atomicCowUsed = false;
 
+//variables for strategies delay
+bool startDelay = false;
+int temporalID;
+float penaltyTime;
+
 ALLEGRO_TIMER *timer = NULL;
 ALLEGRO_BITMAP *spaceShipImage = NULL;
 ALLEGRO_BITMAP *bulletImage = NULL;
@@ -82,9 +89,9 @@ void shootBullet(){
         bulletList->insert(bulletID, bulletDamage);
     }
 }
-int strategyLoader(int strategy){
+int strategyLoader(int strategy, string path){
     if(strategy == 1){ //sprinter strategy
-        ifstream file("./data/sprinter.xml");
+        ifstream file(path);
         if (!file.is_open()) {
             cout << "Error: could not open the XML file." << endl;
             return 1;
@@ -103,7 +110,7 @@ int strategyLoader(int strategy){
         movementDistance += incrementValue;
 
     }else if(strategy == 2){ //decelerator strategy
-        ifstream file("./data/decelerator.xml");
+        ifstream file(path);
         if (!file.is_open()) {
             cout << "Error: could not open the XML file." << endl;
             return 1;
@@ -122,7 +129,7 @@ int strategyLoader(int strategy){
         spaceList->reduceSpeed(reductionValue);
 
     }else if(strategy == 3){ //cowboy stategy
-        ifstream file("./data/cowboy.xml");
+        ifstream file(path);
         if (!file.is_open()) {
             cout << "Error: could not open the XML file." << endl;
             return 1;
@@ -152,7 +159,7 @@ int strategyLoader(int strategy){
 
     }else{
         if(!atomicCowUsed){
-            ifstream file("./data/atomicCowboy.xml");
+            ifstream file(path);
             if (!file.is_open()) {
                 cout << "Error: could not open the XML file." << endl;
                 return 1;
@@ -363,6 +370,7 @@ int main()
         enemies = phases * 5 * spaceshipsPerWave;
         aux1 = enemies;
         srand(time(0));
+        strategyList -> initialize();
 
         //!initialization of the spaceship list, and adding all the spaceships to the list
         while(aux1 >= spaceshipsPerWave){
@@ -405,7 +413,6 @@ int main()
                 exit(1);
 
             }
-            //cout << "\n";
             al_wait_for_event(queue, &event);
             
             switch(event.type)
@@ -416,9 +423,31 @@ int main()
                     timeSinceLastYUpdate += 1.0 / 60.0;
                     timeSinceLastShoot += 1.0 / 60.0;
                     timeSinceLastPower += 1.0 / 60.0;
+
+                    if(startDelay){
+                        penaltyTime += 1.0 / 60.0;
+                    }
+                    
+                    if(penaltyTime >= 5.0){
+                        strategyList -> loadOnMemory(temporalID);
+                        penaltyTime = 0;
+                        startDelay = false;
+                        if(temporalID == 0){
+                            cout << "Sprinter strategy ready to use" << endl;
+
+                        }else if(temporalID == 1){
+                            cout << "Decelerator strategy ready to use" << endl;
+
+                        }else if(temporalID == 2){
+                            cout << "Cowboy strategy ready to use" << endl;
+
+                        }else if(temporalID == 3){
+                            cout << "Atomic Cowboy strategy ready to use" << endl;
+                        }
+                    }
                     
                     if (timeSinceLastShoot >= shootInterval){
-                        if(bulletOnScreen == false){ //provisional, solo es por probar.
+                        if(bulletOnScreen == false){
                             bulletID++;
                         }
                         shootBullet();
@@ -449,25 +478,59 @@ int main()
                     }
                     if(key[ALLEGRO_KEY_J]){
                         if(timeSinceLastPower >= powerInterval){
-                            strategyLoader(1);
+                            if(strategyList -> checkStrategyStatus(0)){
+                                cout << "sprinter executed" << endl;
+                                strategyLoader(1, strategyList -> getStrategyPath(0));
+                                strategyList->removeFromMemory(0);
+                            }else{
+                                startDelay = true;
+                                temporalID = 0;
+                                penaltyTime = 0;
+                                cout << "Penalty delay start." << endl;
+                            }
                             timeSinceLastPower = 0;
                         }
                     }
                     if(key[ALLEGRO_KEY_K]){
                         if(timeSinceLastPower >= powerInterval){
-                            strategyLoader(2);
-                            timeSinceLastPower = 0;
+                            if(strategyList -> checkStrategyStatus(1)){
+                                strategyLoader(2, strategyList -> getStrategyPath(1));
+                                strategyList->removeFromMemory(1);
+                            }else{
+                                startDelay = true;
+                                temporalID = 1;
+                                penaltyTime = 0;
+                                cout << "Penalty delay start." << endl;
+                            }
+                            timeSinceLastPower = 0;                           
                         }
                     }
                     if(key[ALLEGRO_KEY_L]){
                         if(timeSinceLastPower >= powerInterval){
-                            strategyLoader(3);
+                            if(strategyList -> checkStrategyStatus(2)){
+                                strategyLoader(3, strategyList -> getStrategyPath(2));
+                                strategyList->removeFromMemory(2);
+                            }else{
+                                startDelay = true;
+                                temporalID = 2;
+                                penaltyTime = 0;
+                                cout << "Penalty delay start." << endl;
+                            }
                             timeSinceLastPower = 0;
+                            
                         }
                     }
                     if(key[ALLEGRO_KEY_SEMICOLON]){
                         if(timeSinceLastPower >= powerInterval){
-                            strategyLoader(4);
+                            if(strategyList -> checkStrategyStatus(3)){
+                                strategyLoader(4, strategyList -> getStrategyPath(3));
+                                strategyList->removeFromMemory(3);
+                            }else{
+                                startDelay = true;
+                                temporalID = 3;
+                                penaltyTime = 0;
+                                cout << "Penalty delay start." << endl;
+                            }
                             timeSinceLastPower = 0;
                         }
                     }

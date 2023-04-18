@@ -2,7 +2,7 @@
 # Battlespace 
 <t>Battlespace game, developed using C++ and Allegro5 library</t>
 
-## Instalation
+## installation
 
 <t>-> Install Allegro5 library (PPA Installation recommended)</t>
 

@@ -17,14 +17,11 @@
 using namespace std;
 
 //! Game variables
-
 SpaceshipList* spaceList = new SpaceshipList;
 struct spaceArray spaceshipsOnSomeWave;
 Initializer* start = new Initializer;
 BulletList* bulletList = new BulletList;
 StrategyList* strategyList = new StrategyList;
-
-ALLEGRO_EVENT event;
 
 float spaceshipY = 215;
 float spaceshipX = 20;
@@ -41,11 +38,8 @@ int spaceshipLength = 80;
 
 float bulletX = spaceshipX;
 float bulletY = spaceshipY;
-float timeSinceLastShoot, timeSinceLastYUpdate, timeSinceLastPower, timeSinceLastCowUpdate = 0;
+
 bool bulletOnScreen, usingCollector, atomicCowOnScreen = false;
-float shootInterval = 0.1;
-float cowUpdateInterval = 2;
-float powerInterval = 1; //!Variable used to limit the powers
 int bulletSpeed = 12;
 int level, spaceshipsSpeed, spaceshipsPerWave, phases, enemies, ID, condition, bulletDamage;
 int wave, aux1, enemiesOnScreen, enemieXCoord, enemieYCoord, auxiliarDamage;
@@ -55,13 +49,23 @@ int useCollector = true;
 int bulletSoundID = 0;
 int atomicCowUsed = false;
 
-//variables for strategies delay
+//!Game timers
+float timeSinceLastShoot, timeSinceLastYUpdate, timeSinceLastPower, timeSinceLastCowUpdate = 0;
+float shootInterval = 0.1;
+float cowUpdateInterval = 2;
+float powerInterval = 1;
+
+//!variables for strategies delay
 bool startDelay = false;
 int temporalID;
 float penaltyTime;
 string strategyInfo;
 
+//!stage array
+int stageArray[2];
 
+//!Allegro objects
+ALLEGRO_EVENT event;
 ALLEGRO_TIMER *timer = NULL;
 ALLEGRO_BITMAP *spaceShipImage = NULL;
 ALLEGRO_BITMAP *bulletImage = NULL;
@@ -75,7 +79,17 @@ ALLEGRO_SAMPLE *explosion = NULL;
 ALLEGRO_SAMPLE *shot = NULL;
 ALLEGRO_SAMPLE *moo = NULL;
 ALLEGRO_SAMPLE *penalty = NULL;
+ALLEGRO_BITMAP *background = NULL;
 
+//!function to update the stageArray
+void updateStageArray(){
+    stageArray[0] = start->getSpaceshipsPerWave();
+    if(specificWave == 0){
+        stageArray[1] = 10;
+    }else{
+        stageArray[1] = (specificWave + 1) * 10;
+    }
+}
 
 //!Function to update the bullet coords
 void shootBullet(){
@@ -242,6 +256,7 @@ void updateEnemies(struct spaceArray enemiesArray){
 //! Funtion to render the game
 void render(){
     al_clear_to_color(al_map_rgb(0, 0, 0));
+    al_draw_bitmap(background, 0, 0, 0);
     if(usingCollector){
         al_draw_textf(font, al_map_rgb(255, 255, 255), 0, 0, 0, " Actual wave: %.1d Bullets: %.1d UsingCollector: true", specificWave, bullets);
     }else{
@@ -269,7 +284,7 @@ void render(){
         al_draw_bitmap(bulletImage, bulletX, bulletY, 0);
     }
     if (specificWave == phases * 5 + 1){
-        cout << "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n";
+        cout << "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n";
         cout << "*****************************\n";
         cout << "           YOU WON\n";
         cout << "       CONGRATULATIONS!\n";  
@@ -280,6 +295,10 @@ void render(){
     else{
         if (enemiesOnScreen == 0){
             specificWave += 1;
+            cout << "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n";
+            cout << "Stage Array Information: " << endl;
+            cout << "   Spaceships per wave: " << stageArray[0] << endl;
+            cout << "   Spaceships health: " << stageArray[1] << endl;
 
             if(specificWave < phases * 5 + 1){
                 spaceshipsOnSomeWave = spaceList->returnSpaceships(specificWave);
@@ -321,7 +340,7 @@ void render(){
                 updateEnemies(spaceshipsOnSomeWave);
             
             }else if(condition == 10){
-                cout << "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n";
+                cout << "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n";
                 cout << "*****************************\n";
                 cout << "        GAME OVER\n";
                 cout << " An enemy crossed the limit\n";  
@@ -330,7 +349,7 @@ void render(){
                 exit(1); 
 
             }else if(condition == 9){
-                cout << "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n";
+                cout << "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n";
                 cout << "*****************************\n";
                 cout << "        GAME OVER\n";
                 cout << "An enemy hit your spaceship\n";  
@@ -357,7 +376,7 @@ void setDelay(int ID){
 int main()
 {
     //!Difficulty selection
-    cout << "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n";
+    cout << "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n";
     cout << "//////////////////////////////////////////////////////////////////////////\n";
     cout << "Choose the difficulty level of the game: \n1 -> Easy\n2 -> Medium\n3 -> Hard\n";
     cout << "//////////////////////////////////////////////////////////////////////////\n";
@@ -383,6 +402,7 @@ int main()
         font = al_create_builtin_font();
         spaceShipImage = al_load_bitmap("./sprites/sprite_spaceship.png");
         bulletImage = al_load_bitmap("./sprites/sprite_bullet.png");
+        background = al_load_bitmap("./sprites/background.png");
         explosion = al_load_sample("aud/explosion.wav");
         shot = al_load_sample("aud/shot.wav");
         moo = al_load_sample("aud/moo.wav");
@@ -431,7 +451,7 @@ int main()
         {
 
             if(bullets == 0 && useCollector == false){
-                cout << "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n";
+                cout << "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n";
                 cout << "*****************************\n";
                 cout << "        GAME OVER\n";
                 cout << " You spent all your bullets\n";  
@@ -446,6 +466,7 @@ int main()
             {
                 case ALLEGRO_EVENT_TIMER:
                     updateBullet();
+                    updateStageArray();
                     timeSinceLastCowUpdate += 1.0 / 60.0;
                     timeSinceLastYUpdate += 1.0 / 60.0;
                     timeSinceLastShoot += 1.0 / 60.0;
@@ -454,7 +475,7 @@ int main()
                     if(startDelay){
                         penaltyTime += 1.0 / 60.0;
                     }
-                    
+
                     if(penaltyTime >= 5.0){
                         strategyList -> loadOnMemory(temporalID);
                         penaltyTime = 0;
@@ -586,6 +607,7 @@ int main()
         al_destroy_sample(shot); 
         al_destroy_sample(moo); 
         al_destroy_sample(penalty); 
+        al_destroy_bitmap(background);
         return 0;
         }
 };

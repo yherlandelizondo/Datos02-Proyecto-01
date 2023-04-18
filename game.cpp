@@ -59,6 +59,8 @@ int atomicCowUsed = false;
 bool startDelay = false;
 int temporalID;
 float penaltyTime;
+string strategyInfo;
+
 
 ALLEGRO_TIMER *timer = NULL;
 ALLEGRO_BITMAP *spaceShipImage = NULL;
@@ -244,6 +246,21 @@ void render(){
     }else{
         al_draw_textf(font, al_map_rgb(255, 255, 255), 0, 0, 0, " Actual wave: %.1d Bullets: %.1d BulletsOnCollector: %.1d", specificWave, bullets, bulletList->getCollectorBullets());
     }
+    if(startDelay){
+        if(temporalID == 0){
+            al_draw_textf(font, al_map_rgb(255, 0, 0), 0, 15, 0, " %.1f seconds to use sprinter strategy", 5 - penaltyTime);
+
+        }else if(temporalID == 1){
+            al_draw_textf(font, al_map_rgb(255, 0, 0), 0, 15, 0, " %.1f seconds to use decelerator strategy", 5 - penaltyTime);
+
+        }else if(temporalID == 2){
+            al_draw_textf(font, al_map_rgb(255, 0, 0), 0, 15, 0, " %.1f seconds to use cowboy strategy", 5 - penaltyTime);
+
+        }else if(temporalID == 3){
+            al_draw_textf(font, al_map_rgb(255, 0, 0), 0, 15, 0, " %.1f seconds to use atomicCowboy strategy", 5 - penaltyTime);
+
+        } 
+    }
     
     al_draw_bitmap(spaceShipImage, spaceshipX, spaceshipY, 0);
 
@@ -328,6 +345,13 @@ void render(){
     }
     
 }
+
+void setDelay(int ID){
+    startDelay = true;
+    temporalID = ID;
+    penaltyTime = 0;
+}
+
 //! Main funtion
 int main()
 {
@@ -403,6 +427,7 @@ int main()
         //!Main loop
         while(1)
         {
+
             if(bullets == 0 && useCollector == false){
                 cout << "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n";
                 cout << "*****************************\n";
@@ -432,18 +457,6 @@ int main()
                         strategyList -> loadOnMemory(temporalID);
                         penaltyTime = 0;
                         startDelay = false;
-                        if(temporalID == 0){
-                            cout << "Sprinter strategy ready to use" << endl;
-
-                        }else if(temporalID == 1){
-                            cout << "Decelerator strategy ready to use" << endl;
-
-                        }else if(temporalID == 2){
-                            cout << "Cowboy strategy ready to use" << endl;
-
-                        }else if(temporalID == 3){
-                            cout << "Atomic Cowboy strategy ready to use" << endl;
-                        }
                     }
                     
                     if (timeSinceLastShoot >= shootInterval){
@@ -479,14 +492,12 @@ int main()
                     if(key[ALLEGRO_KEY_J]){
                         if(timeSinceLastPower >= powerInterval){
                             if(strategyList -> checkStrategyStatus(0)){
-                                cout << "sprinter executed" << endl;
                                 strategyLoader(1, strategyList -> getStrategyPath(0));
                                 strategyList->removeFromMemory(0);
                             }else{
-                                startDelay = true;
-                                temporalID = 0;
-                                penaltyTime = 0;
-                                cout << "Penalty delay start." << endl;
+                                if(!startDelay){
+                                    setDelay(0);
+                                }
                             }
                             timeSinceLastPower = 0;
                         }
@@ -497,10 +508,9 @@ int main()
                                 strategyLoader(2, strategyList -> getStrategyPath(1));
                                 strategyList->removeFromMemory(1);
                             }else{
-                                startDelay = true;
-                                temporalID = 1;
-                                penaltyTime = 0;
-                                cout << "Penalty delay start." << endl;
+                                if(!startDelay){
+                                    setDelay(1);
+                                }
                             }
                             timeSinceLastPower = 0;                           
                         }
@@ -511,27 +521,27 @@ int main()
                                 strategyLoader(3, strategyList -> getStrategyPath(2));
                                 strategyList->removeFromMemory(2);
                             }else{
-                                startDelay = true;
-                                temporalID = 2;
-                                penaltyTime = 0;
-                                cout << "Penalty delay start." << endl;
+                                if(!startDelay){
+                                    setDelay(2);
+                                }
                             }
                             timeSinceLastPower = 0;
                             
                         }
                     }
                     if(key[ALLEGRO_KEY_SEMICOLON]){
-                        if(timeSinceLastPower >= powerInterval){
-                            if(strategyList -> checkStrategyStatus(3)){
-                                strategyLoader(4, strategyList -> getStrategyPath(3));
-                                strategyList->removeFromMemory(3);
-                            }else{
-                                startDelay = true;
-                                temporalID = 3;
-                                penaltyTime = 0;
-                                cout << "Penalty delay start." << endl;
+                        if(!atomicCowUsed){
+                            if(timeSinceLastPower >= powerInterval){
+                                if(strategyList -> checkStrategyStatus(3)){
+                                    strategyLoader(4, strategyList -> getStrategyPath(3));
+                                    strategyList->removeFromMemory(3);
+                                }else{
+                                    if(!startDelay){
+                                        setDelay(3);
+                                    }    
+                                }
+                                timeSinceLastPower = 0;
                             }
-                            timeSinceLastPower = 0;
                         }
                     }
                         

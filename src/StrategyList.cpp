@@ -16,9 +16,6 @@ class StrategyList{
         bool status = false;
         int lastStrategyUsed = 5; 
 
-        int getIdToModify(){
-            return rand()%2;
-        }
 
     public:
         //! constructor method
@@ -36,22 +33,18 @@ class StrategyList{
                     i--;
                 }else{
                     if(randomID == 0){
-                        cout << "entro 1\n";
                         insert(i,randomID, sprinterPath);
                         lastStrategyUsed = randomID;
 
                     }else if(randomID == 1){
-                        cout << "entro 2\n";
                         insert(i, randomID, deceleratorPath);
                         lastStrategyUsed = randomID;
 
                     }else if(randomID == 2){
-                        cout << "entro 3\n";
                         insert(i, randomID, cowboyPath);
                         lastStrategyUsed = randomID;
 
                     }else if(randomID == 3){
-                        cout << "entro 4\n";
                         insert(i, randomID, atomicCowboyPath);
                         lastStrategyUsed = randomID;
                     } 
@@ -129,27 +122,42 @@ class StrategyList{
 
         void loadOnMemory(int ID){
             StrategyNode* temp = head;
+            int idToModify = rand()%2;
 
             while (temp != NULL){ 
-                if(temp -> getNodeID() == getIdToModify()){
+                if(temp -> getNodeID() == idToModify){
                     if(ID == 0){
+                        temp -> setStrategyID(ID);
                         temp -> setPath(sprinterPath);
-                        temp -> setStrategyID(ID);
                     }
-                    if(ID == 1){
+                    else if(ID == 1){
+                        temp -> setStrategyID(ID);
                         temp -> setPath(deceleratorPath);
-                        temp -> setStrategyID(ID);
                     }
-                    if(ID == 2){
+                    else if(ID == 2){
+                        temp -> setStrategyID(ID);
                         temp -> setPath(cowboyPath);
-                        temp -> setStrategyID(ID);
                     }
-                    else{
-                        temp -> setPath(atomicCowboyPath);
+                    else if(ID == 3){
                         temp -> setStrategyID(ID);
+                        temp -> setPath(atomicCowboyPath);
                     }
                 }  
                 temp = temp -> getNext();
             }
+        }
+
+        void printList(){
+            StrategyNode* temp = head;
+            if(head == NULL){
+                cout << "\n" << "Empty  list\n";
+                return;
+            }
+            cout << "\n";
+            while(temp != NULL){
+                cout << temp-> getPath() << " -> ";
+                temp = temp -> getNext();
+            }
+            return;
         }
 };

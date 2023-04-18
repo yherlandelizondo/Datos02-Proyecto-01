@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!--xml used to store the cowboy strategy parameters-->
 <cowboy_strategy>
     <damageIncrement>2</damageIncrement>
     <sprite path="sprites/sprite_cow.png"/>

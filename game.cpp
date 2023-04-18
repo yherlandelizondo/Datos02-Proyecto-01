@@ -25,20 +25,15 @@ StrategyList* strategyList = new StrategyList;
 
 float spaceshipY = 215;
 float spaceshipX = 20;
-
 int movementDistance = 5;
-
 int screenWidth = 640;
 int screenHeight = 480;
-
 int bulletHeight = 40;
 int bulletLength = 40;
 int spaceshipHeight = 46;
 int spaceshipLength = 80;
-
 float bulletX = spaceshipX;
 float bulletY = spaceshipY;
-
 bool bulletOnScreen, usingCollector, atomicCowOnScreen = false;
 int bulletSpeed = 12;
 int level, spaceshipsSpeed, spaceshipsPerWave, phases, enemies, ID, condition, bulletDamage;
@@ -106,6 +101,7 @@ void shootBullet(){
         bulletList->insert(bulletID, bulletDamage);
     }
 }
+//!method used to load an strategy
 int strategyLoader(int strategy, string path){
     if(strategy == 1){ //sprinter strategy
         ifstream file(path);
@@ -236,7 +232,7 @@ void updateBullet(){ // verificacion de collisiones
         }
     }
 }
-
+//!method used to modify the enemies movement
 void updateEnemies(struct spaceArray enemiesArray){ 
     for(int j = 0; j < enemiesArray.size; j++){
         if(enemiesArray.spaceshipsOnWave[j]->getYMovement()){
@@ -365,7 +361,7 @@ void render(){
     }
     
 }
-
+//!method used to start the delay of an strategy
 void setDelay(int ID){
     startDelay = true;
     temporalID = ID;
@@ -452,10 +448,10 @@ int main()
 
             if(bullets == 0 && useCollector == false){
                 cout << "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n";
-                cout << "*****************************\n";
-                cout << "        GAME OVER\n";
-                cout << " You spent all your bullets\n";  
-                cout << "*****************************\n";
+                cout << "*******************************\n";
+                cout << "         GAME OVER\n";
+                cout << "You have spent all your bullets\n";  
+                cout << "*******************************\n";
                 al_rest(0.2);
                 exit(1);
 
@@ -593,7 +589,7 @@ int main()
                     exit(1);
             }
         }
-
+        //!removing the ALLEGRO components
         al_destroy_font(font);
         al_destroy_bitmap(spaceShipImage);
         al_destroy_bitmap(bulletImage);

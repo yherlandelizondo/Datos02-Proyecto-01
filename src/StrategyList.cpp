@@ -26,8 +26,8 @@ class StrategyList{
         //!insert two nodes to the list, the ID for those nodes it's random
         void initialize(){
             for(int i = 0; i < 2; i++){
-
                 int randomID = rand()%4;
+
                 if (randomID == lastStrategyUsed){
                     randomID = rand()%4;
                     i--;
@@ -88,7 +88,7 @@ class StrategyList{
             }
             return temp->getPath();
         }
-
+        //!method used to remove an stategy from memory
         void removeFromMemory(int ID){
             StrategyNode* temp = head;
             int randomID = rand()%4;
@@ -119,7 +119,7 @@ class StrategyList{
                 }
             }
         }
-
+        //!method used to load an strategy to memory
         void loadOnMemory(int ID){
             StrategyNode* temp = head;
             int idToModify = rand()%2;
@@ -146,7 +146,7 @@ class StrategyList{
                 temp = temp -> getNext();
             }
         }
-
+        //!method used to print the list
         void printList(){
             StrategyNode* temp = head;
             if(head == NULL){

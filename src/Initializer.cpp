@@ -12,13 +12,13 @@ class Initializer{
         int phases;
         int bulletDamage;
 
-
+        //!method used to initialize the game parameters
         void setValues(int level){
-            //! 0=easy, 1=medium, 2=hard
+            //! 1=easy, 2=medium, 3=hard
             if(level == 1){
-                bullets = 50;//130
+                bullets = 50;
                 spaceshipsPerWave = 5;
-                spaceshipsSpeed = 1; // values between 1 and 2 (using 1)
+                spaceshipsSpeed = 1; // values between 1 and 2
                 phases = 1;
                 bulletDamage = 25;
 
@@ -39,33 +39,36 @@ class Initializer{
         }
         
     public:
+        //!method used to set the difficulty level of the game
         void setLevel (int difficulty) {
             level = difficulty;
             setValues(difficulty);
         }
-
+        //!method used to set the damage of the bullets
         void setDamage(int damage){
             bulletDamage = damage;
         }
-
+        //!method used to return the level of the game
         int getLevel(){
             return level;
         }
-
+        //!method used to return the bullet number
         int getBullets(){
             return bullets;
         }
-
+        //!method used to return the phases of the game
         int getPhases(){
             return phases;
         }
+        //!method used to return the spaceships per wave
         int getSpaceshipsPerWave(){
             return spaceshipsPerWave;
         }
-
+        //!method used to return the spaceships speed
         int getSpaceshipsSpeed(){
             return spaceshipsSpeed;
         }
+        //!method used to return the damage of the bullets
         int getBulletDamage(){
             return bulletDamage;
         }

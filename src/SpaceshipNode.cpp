@@ -9,7 +9,7 @@ using namespace std;
 //! falta el id
 
 class SpaceshipNode{
-    public:
+    private:
         int id;
         int health;
         int random;
@@ -24,7 +24,8 @@ class SpaceshipNode{
         int upOrDown;
         ALLEGRO_BITMAP *enemySprite = NULL;
         ALLEGRO_BITMAP *sprite;
-
+        
+        //!method used to generate a random boolean
         bool randomBool(){
             random = rand()%2;
             if(random){
@@ -32,12 +33,15 @@ class SpaceshipNode{
             }
             return false;    
         }
+        //!method used to set the health of the enemies
         void setHealth(){
             for(int i = 0; i <= wave; i++){
                 health += 10;
             }
         }
 
+    public:
+        //!constructor method
         SpaceshipNode(int identifier, int waveNum, int yCoor, int speed, int randSprite, int direction){
             this -> id = identifier;
             this -> wave = waveNum;
@@ -53,21 +57,23 @@ class SpaceshipNode{
             this -> enemieSpeed = speed;
             this -> setHealth();
         }
-
+        //!method used to set the id of the node
         void setID(int identifier){
             id = identifier;
         }
-
+        //!method used to return the id of the node
         int getID(){
             return id;
         }
+        //!method used to set the next node
         void setNext(SpaceshipNode* ptr){
             next=ptr;
         }
-
+        //!method used to get the next node
         SpaceshipNode* getNext(){
             return next;
         }
+        //!method used to apply the damage to the spaceship
         void applyDamage(int damage){
             health -= damage;
         }
@@ -79,6 +85,7 @@ class SpaceshipNode{
                 return true;
             }
         }
+        //!method used to load and return the sprite of the spaceship
         ALLEGRO_BITMAP* applySprite(){
             if(selectedSprite == 0){
                 enemySprite = al_load_bitmap("./sprites/sprite_blueEnemy.png");
@@ -93,15 +100,19 @@ class SpaceshipNode{
             }
             return enemySprite;
         }
+        //!method used to return the x coord of the spaceship
         int getXCoord(){
             return xCoord;
         }
+        //!method used to return the y coord of the spaceship
         int getYCoord(){
             return yCoord;
         }
+        //!method used to modify the x coord of the spaceship
         void modifyXCoord(){
             xCoord -= enemieSpeed;
         }
+        //!method used to modify the y coord of the spaceship
         void modifyYCoord(){
             if(upOrDown == 0){
                 if(yCoord + 1 < 435){
@@ -117,26 +128,30 @@ class SpaceshipNode{
                 }
             }
         }
+        //!method used to return the wave number
         int getWave(){
             return wave;
         }
-
+        //!method used to get the color of some enemie
         ALLEGRO_BITMAP* getColor(){
             return sprite;
         }
+        //!method used to return if some enemie can move up or down
         int getYMovement(){
             return yMovement;
         }
+        //!method used to get the health of the spaceship
         int getHealth(){
             return health;
         }
+        //!method used to set the speed of the enemies
         void setSpeed(float speed){
             if(speed > 0){
                 enemieSpeed = speed;
             }
         }
+        //!method used to get the enemies speed
         int getSpeed(){
             return enemieSpeed;
         }
-
 };

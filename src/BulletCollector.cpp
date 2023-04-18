@@ -28,6 +28,7 @@ class BulletCollector{
         int bulletsOnCollector(){
             return bulletNum;
         }
+        //!method used to set the bullet damage
         void setDamage(int damage){
             bulletDamage = damage;
         }
@@ -49,7 +50,7 @@ class BulletCollector{
         CollectorNode* getHead(){
             return head;
         }
-        
+        //! method used to retur the bullet damage
         int getDamage(){
             return bulletDamage;
         }

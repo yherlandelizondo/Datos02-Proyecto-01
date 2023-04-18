@@ -7,19 +7,20 @@ using namespace std;
 BulletCollector collector;
 
 class BulletList{
-
-    BulletNode* head;
-    int size;
-    int bulletDamage;
-    int bullets;
+    private:
+        BulletNode* head;
+        int size;
+        int bulletDamage;
+        int bullets;
 
     public:
+        //!constructor method
         BulletList(){
             head=NULL;
             size = 0;
             bullets = 0;
         }
-
+        //!method used to insert nodes to collectorList
         void insert(int ID, int damage){
             BulletNode* newNode = new BulletNode(ID, damage);
             newNode -> setNext(head);
@@ -34,7 +35,6 @@ class BulletList{
             while (temp != NULL){
                 if(temp -> getID() == id){
                     removeAux(temp, false);
-                    //cout << "Bullet deleted\n";
                     return 0;
                 }
                 else{
@@ -81,7 +81,7 @@ class BulletList{
             }
             return 0;
         }
-
+        //!method used to print the nodes of the list
         void printList(){
             BulletNode* temp = head;
             if(head == NULL){
@@ -95,19 +95,19 @@ class BulletList{
             }
             return;
         }
-
+        //!method used to return the head pointer of the list
         BulletNode* getHead(){
             return head;
         }
-
+        //!method used to set a new head on the list 
         void setHead(BulletNode* data){
             head = data;
         }   
-
+        //!method used to return the size of the list
         int getSize(){
             return size;
         }
-
+        //!method used to return the number of bullets stored on collectorList
         int getCollectorBullets(){
             bullets = collector.bulletsOnCollector();
             return bullets;

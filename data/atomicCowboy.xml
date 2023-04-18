@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!--xml used to store the atomic cow strategy parameters-->
 <atomicCowboy_strategy>
     <damageIncrement>200</damageIncrement>
     <sprite path="sprites/sprite_atomicCow.png"/>

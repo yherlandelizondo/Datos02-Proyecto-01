@@ -10,26 +10,27 @@ struct spaceArray{
 };
 
 class SpaceshipList{
-
-    SpaceshipNode* head;
-    int size;
-    int event;
-    int auxiliarEvent;
+    private:
+        SpaceshipNode* head;
+        int size;
+        int event;
+        int auxiliarEvent;
     
     public:
+        //!constructor method
         SpaceshipList(){
             head = NULL;
             size = 0;
             size = 7;
         }
-
+        //!method used to insert a spaceship to the list
         void insert(int ID, int wave, int yCoord, int enemieSpeed, int randSrite, int direction){
             SpaceshipNode* newNode = new SpaceshipNode(ID, wave, yCoord, enemieSpeed, randSrite, direction);
             size++;
             newNode -> setNext(head);
             head = newNode;
         }
-
+        //!method used to reduce the speed of the spaceships
         void reduceSpeed(float decrement){
             SpaceshipNode* temp = head;
             while (temp != NULL){
@@ -37,7 +38,7 @@ class SpaceshipList{
                 temp = temp -> getNext();
             }
         }
-
+        //!auxiliar funtion, used to remove spaceships from the list 
         SpaceshipNode* removeAux(SpaceshipNode* node){
             SpaceshipNode* temp = head;
             delete node;
@@ -57,7 +58,7 @@ class SpaceshipList{
             }
             return 0;
         }
-
+        //!function used to remove a spaceship from the list
         int remove(int id){
             SpaceshipNode* temp = head;
             while (temp != NULL){
@@ -71,7 +72,7 @@ class SpaceshipList{
             }
             return 0;
         }
-
+        //!method used to print the list
         int prinList(){
             SpaceshipNode* temp1 = head;
             if(head == NULL){
@@ -85,11 +86,11 @@ class SpaceshipList{
             }
             return 0;
         }
-
+        //!method used to return the head of the list
         SpaceshipNode* getHead(){
             return head;
         }
-
+        //!method used to return the stuct that contains the spaceships array (spaceships on the screen)
         struct spaceArray returnSpaceships(int wave){
             SpaceshipNode* temp3 = head;
 
@@ -109,16 +110,16 @@ class SpaceshipList{
             }
             return arrayStruct;
         }
-
+        //!method used to set the head of the list
         void setHead(SpaceshipNode* data){
             head = data;
         }
-
+        //!method used to return the size of the list
         int getSize(){
             return size;
         }
+        //!method used to detect the game collitions (spaceships collitions, bullet collitions...)
         int collitionDetector(int bulletX, int bulletY, int bulletHeight, int bulletLength, int spaceshipX, int spaceshipY, int spaceshipHeight, int spaceshipLength, int wave, int bulletDamage, int enemiesOnScreen){
-            //si colisciona con la nave o si la pasó el limite 7, si le da la bala 8 y si no pasa nada 9
             SpaceshipNode* temp4 = head;
             struct spaceArray arrayStruct;
             while (temp4 != NULL){

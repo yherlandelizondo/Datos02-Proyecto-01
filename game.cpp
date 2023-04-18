@@ -189,7 +189,7 @@ int strategyLoader(int strategy, string path){
             bulletImage = al_load_bitmap(atomicSprite);
             atomicCowOnScreen = true;
 
-            al_play_sample(moo, 0.2, 0.0, 1.0, ALLEGRO_PLAYMODE_ONCE, NULL);
+            al_play_sample(moo, 0.08, 0.0, 1.0, ALLEGRO_PLAYMODE_ONCE, NULL);
             }
             atomicCowUsed = true;
     }
@@ -299,7 +299,7 @@ void render(){
             condition = spaceList->collitionDetector(bulletX, bulletY, bulletHeight, bulletLength, spaceshipX, spaceshipY, spaceshipHeight, spaceshipLength, specificWave, bulletDamage, enemiesOnScreen);
             //!Using the collition detector return to modify some enemies or finish the game
             if(condition == 8){ //!you hit an enemie with a bullet
-                al_play_sample(explosion, 0.08, 0.0, 1.0, ALLEGRO_PLAYMODE_ONCE, NULL);
+                al_play_sample(explosion, 0.05, 0.0, 1.0, ALLEGRO_PLAYMODE_ONCE, NULL);
                 bulletOnScreen = false;
                 if(atomicCowOnScreen){
                     atomicCowOnScreen = false;

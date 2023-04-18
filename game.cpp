@@ -74,6 +74,7 @@ ALLEGRO_BITMAP *auxiliarImage = NULL;
 ALLEGRO_SAMPLE *explosion = NULL;
 ALLEGRO_SAMPLE *shot = NULL;
 ALLEGRO_SAMPLE *moo = NULL;
+ALLEGRO_SAMPLE *penalty = NULL;
 
 
 //!Function to update the bullet coords
@@ -82,7 +83,7 @@ void shootBullet(){
         if(bulletSoundID == 1){
             al_play_sample(moo, 0.2, 0.0, 1.0, ALLEGRO_PLAYMODE_ONCE, NULL);
         }else{
-            al_play_sample(shot, 0.3, 0.0, 1.0, ALLEGRO_PLAYMODE_ONCE, NULL);
+            al_play_sample(shot, 0.08, 0.0, 1.0, ALLEGRO_PLAYMODE_ONCE, NULL);
         }
         bulletX = spaceshipX;
         bulletY = spaceshipY;
@@ -298,7 +299,7 @@ void render(){
             condition = spaceList->collitionDetector(bulletX, bulletY, bulletHeight, bulletLength, spaceshipX, spaceshipY, spaceshipHeight, spaceshipLength, specificWave, bulletDamage, enemiesOnScreen);
             //!Using the collition detector return to modify some enemies or finish the game
             if(condition == 8){ //!you hit an enemie with a bullet
-                al_play_sample(explosion, 0.15, 0.0, 1.0, ALLEGRO_PLAYMODE_ONCE, NULL);
+                al_play_sample(explosion, 0.08, 0.0, 1.0, ALLEGRO_PLAYMODE_ONCE, NULL);
                 bulletOnScreen = false;
                 if(atomicCowOnScreen){
                     atomicCowOnScreen = false;
@@ -385,6 +386,7 @@ int main()
         explosion = al_load_sample("aud/explosion.wav");
         shot = al_load_sample("aud/shot.wav");
         moo = al_load_sample("aud/moo.wav");
+        penalty = al_load_sample("aud/penalty.wav");
         auxiliarImage = bulletImage;
         phases = start -> getPhases();
         bullets = start -> getBullets();
@@ -497,7 +499,9 @@ int main()
                             }else{
                                 if(!startDelay){
                                     setDelay(0);
-                                }
+                                }else{
+                                    al_play_sample(penalty, 0.30, 0.0, 1.0, ALLEGRO_PLAYMODE_ONCE, NULL);
+                                } 
                             }
                             timeSinceLastPower = 0;
                         }
@@ -510,7 +514,9 @@ int main()
                             }else{
                                 if(!startDelay){
                                     setDelay(1);
-                                }
+                                }else{
+                                    al_play_sample(penalty, 0.30, 0.0, 1.0, ALLEGRO_PLAYMODE_ONCE, NULL);
+                                } 
                             }
                             timeSinceLastPower = 0;                           
                         }
@@ -523,7 +529,9 @@ int main()
                             }else{
                                 if(!startDelay){
                                     setDelay(2);
-                                }
+                                }else{
+                                    al_play_sample(penalty, 0.30, 0.0, 1.0, ALLEGRO_PLAYMODE_ONCE, NULL);
+                                } 
                             }
                             timeSinceLastPower = 0;
                             
@@ -538,7 +546,9 @@ int main()
                                 }else{
                                     if(!startDelay){
                                         setDelay(3);
-                                    }    
+                                    }else{
+                                        al_play_sample(penalty, 0.30, 0.0, 1.0, ALLEGRO_PLAYMODE_ONCE, NULL);
+                                    }   
                                 }
                                 timeSinceLastPower = 0;
                             }
@@ -575,6 +585,7 @@ int main()
         al_destroy_sample(explosion); 
         al_destroy_sample(shot); 
         al_destroy_sample(moo); 
+        al_destroy_sample(penalty); 
         return 0;
         }
 };

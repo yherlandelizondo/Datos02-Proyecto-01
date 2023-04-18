@@ -18,7 +18,7 @@ class Initializer{
             if(level == 1){
                 bullets = 50;//130
                 spaceshipsPerWave = 5;
-                spaceshipsSpeed = 0; // values between 1 and 2 (using 1)
+                spaceshipsSpeed = 1; // values between 1 and 2 (using 1)
                 phases = 1;
                 bulletDamage = 25;
 

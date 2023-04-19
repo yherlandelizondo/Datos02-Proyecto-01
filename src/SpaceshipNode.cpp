@@ -6,8 +6,7 @@
 #include <allegro5/allegro_image.h>
 using namespace std;
 
-//! falta el id
-
+//! SpaceshipNode class, used to store Nodes of SpaceshipList
 class SpaceshipNode{
     private:
         int id;

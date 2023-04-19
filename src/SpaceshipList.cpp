@@ -8,7 +8,7 @@ struct spaceArray{
     SpaceshipNode* spaceshipsOnWave[10];
     int size = 0;
 };
-
+//!SpaceshipList class, used to store the spaceships
 class SpaceshipList{
     private:
         SpaceshipNode* head;

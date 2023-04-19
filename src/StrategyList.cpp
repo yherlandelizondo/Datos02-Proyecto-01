@@ -4,6 +4,7 @@
 #include "StrategyNode.cpp"
 using namespace std;
 
+//!StrategyList class, used to store the strategys
 class StrategyList{
     
     StrategyNode* head;

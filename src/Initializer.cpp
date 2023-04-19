@@ -3,6 +3,7 @@
 
 using namespace std;
 
+//!Initializer class, used to initialize the game parameters
 class Initializer{
     private:
         int level;

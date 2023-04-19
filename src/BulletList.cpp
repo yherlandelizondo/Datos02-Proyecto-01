@@ -6,6 +6,7 @@ using namespace std;
 
 BulletCollector collector;
 
+//! BulletList class, used to store the bullets
 class BulletList{
     private:
         BulletNode* head;

@@ -3,6 +3,7 @@
 
 using namespace std;
 
+//!BulletNode class, used to store the nodes of bulletList class
 class BulletNode{
 
     private:

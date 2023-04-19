@@ -3,6 +3,7 @@
 #include "CollectorNode.cpp"
 using namespace std;
 
+//!BulletCollector class, used for recycling bullets
 class BulletCollector{
     
     CollectorNode* head;

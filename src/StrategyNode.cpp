@@ -3,6 +3,7 @@
 
 using namespace std;
 
+//! StrategyNode class, used to store Nodes of StrategyList
 class StrategyNode{
 
     private:
